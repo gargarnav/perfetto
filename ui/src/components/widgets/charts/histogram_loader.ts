@@ -185,7 +185,8 @@ export function computeHistogram(
       bucketIndex = bucketCount - 1;
     }
 
-    const bucket = buckets[bucketIndex];
+    // min <= value <= max and the clamp above keep bucketIndex in range.
+    const bucket = buckets[bucketIndex]!;
     buckets[bucketIndex] = {...bucket, count: bucket.count + 1};
   }
 

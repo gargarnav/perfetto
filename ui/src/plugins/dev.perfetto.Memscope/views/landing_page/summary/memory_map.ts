@@ -532,11 +532,12 @@ function buildMemTree(
     (b) => snap.fileByBucket.get(b.key) ?? 0,
   );
   const bucketTotal = bucketBytes.reduce((s, b) => s + b, 0);
+  // bucketBytes is mapped from FILE_BUCKETS, so the lengths match.
   const fileChildren = FILE_BUCKETS.map((b, i) =>
     seg(
       b.label,
       bucketTotal > 0
-        ? ((bucketBytes[i] ?? 0) / bucketTotal) * fileBytes
+        ? (bucketBytes[i]! / bucketTotal) * fileBytes
         : b.key === 'other_file'
           ? fileBytes
           : 0,

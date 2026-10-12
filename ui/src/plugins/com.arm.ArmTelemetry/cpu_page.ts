@@ -84,6 +84,7 @@ export class CpuPage implements m.ClassComponent<CpuPageAttrs> {
           const input = ensureIsInstance(e.target, HTMLInputElement);
           if (!input.files) return;
           const file = input.files[0];
+          if (file === undefined) return;
           // Forward CPU files to the CPU Info Manager
           const reader = new FileReader();
           reader.onloadend = () => {

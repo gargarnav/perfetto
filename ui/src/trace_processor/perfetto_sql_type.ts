@@ -170,11 +170,12 @@ export function parsePerfettoSqlTypeFromString(args: {
   {
     const match = value.match(/^joinid\(([^.]+)\.([^)]+)\)$/);
     if (match) {
+      // Both capture groups are mandatory, so they exist if the regex matched.
       return okResult({
         kind: 'joinid',
         source: {
-          table: match[1],
-          column: match[2],
+          table: match[1]!,
+          column: match[2]!,
         },
       });
     }
@@ -183,11 +184,12 @@ export function parsePerfettoSqlTypeFromString(args: {
   {
     const match = value.match(/^id\(([^.]+)\.([^)]+)\)$/);
     if (match) {
+      // Both capture groups are mandatory, so they exist if the regex matched.
       return okResult({
         kind: 'id',
         source: {
-          table: match[1],
-          column: match[2],
+          table: match[1]!,
+          column: match[2]!,
         },
       });
     }

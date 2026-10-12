@@ -61,14 +61,12 @@ export function removeFalsyValues<T>(
 //       in the position before current element at `to` index.
 export function moveArrayItem<T>(array: T[], from: number, to: number) {
   if (from === to) return;
-  const value = array[from];
-  if (value === undefined) return;
-  array.splice(from, 1);
+  const removed = array.splice(from, 1);
   if (from < to) {
     // We have deleted an item, therefore we need to adjust the target index.
     --to;
   }
-  array.splice(to, 0, value);
+  array.splice(to, 0, ...removed);
 }
 
 // If all values in the array are the same, returns that value. Otherwise
@@ -112,4 +110,18 @@ export function max(xs: ReadonlyArray<number>): number | undefined {
     if (x > r) r = x;
   }
   return r;
+}
+
+// An array guaranteed to contain at least one element. Unlike T[], indexing
+// element 0 yields T rather than T | undefined under noUncheckedIndexedAccess.
+export type NonEmpty<T> = [T, ...T[]];
+export type ReadonlyNonEmpty<T> = readonly [T, ...T[]];
+
+// Narrows an array to NonEmpty<T> if it contains at least one element.
+export function isNonEmpty<T>(arr: T[]): arr is NonEmpty<T>;
+export function isNonEmpty<T>(
+  arr: ReadonlyArray<T>,
+): arr is ReadonlyNonEmpty<T>;
+export function isNonEmpty<T>(arr: ReadonlyArray<T>): boolean {
+  return arr.length > 0;
 }

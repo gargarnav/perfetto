@@ -153,8 +153,8 @@ export interface TreeExplorerAddableMetric {
   readonly name: string;
 }
 
-export function metricId(metric?: TreeExplorerMetric): string {
-  return metric ? (metric.id ?? metric.name) : '';
+export function metricId(metric: TreeExplorerMetric): string {
+  return metric.id ?? metric.name;
 }
 
 export type FilterType =
@@ -240,8 +240,9 @@ export const FILTER_TYPES: ReadonlyArray<FilterTypeOption> = [
 export function createDefaultTreeExplorerState(
   metrics: ReadonlyArray<TreeExplorerMetric>,
 ): TreeExplorerState {
+  const firstMetric = metrics[0];
   return {
-    selectedMetricId: metricId(metrics[0]),
+    selectedMetricId: firstMetric === undefined ? '' : metricId(firstMetric),
     addedMetricIds: [],
     displayMode: 'flamegraph',
     filters: [],
@@ -274,12 +275,13 @@ export function updateTreeExplorerState(
   if (metricStillExists) {
     return state;
   }
+  const firstMetric = metrics[0];
   return {
     filters: state.filters,
     view: state.view,
     addedMetricIds: state.addedMetricIds,
     displayMode: state.displayMode,
-    selectedMetricId: metricId(metrics[0]),
+    selectedMetricId: firstMetric === undefined ? '' : metricId(firstMetric),
   };
 }
 

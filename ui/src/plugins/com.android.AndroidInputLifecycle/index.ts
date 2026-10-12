@@ -331,9 +331,9 @@ export default class AndroidInputLifecyclePlugin implements PerfettoPlugin {
         }
       }
 
-      for (let i = 0; i < steps.length - 1; i++) {
-        const start = steps[i]!;
-        const end = steps[i + 1]!;
+      for (const [i, start] of steps.entries()) {
+        const end = steps[i + 1];
+        if (end === undefined) break;
         connections.push({
           start: {
             trackUri: start.trackUri,

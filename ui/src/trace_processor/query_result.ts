@@ -51,7 +51,12 @@
 import '../base/static_initializers';
 import protobuf from 'protobufjs/minimal';
 import {defer, type Deferred} from '../base/deferred';
-import {ensureExists, assertFalse, assertTrue} from '../base/assert';
+import {
+  ensureDefined,
+  ensureExists,
+  assertFalse,
+  assertTrue,
+} from '../base/assert';
 import {utf8Decode} from '../base/string_utils';
 import {Duration, type duration, Time, type time} from '../base/time';
 
@@ -885,8 +890,7 @@ class QueryResultImpl implements QueryResult, WritableQueryResult {
       const trustMasks = maxCellType <= CellType.CELL_BLOB;
       for (let c = 0; c < numColumns; c++) {
         const expType = specValues[c];
-        const colName = colNames[c];
-        if (expType === undefined || colName === undefined) continue;
+        if (expType === undefined) continue;
         if (trustMasks && isMaskCompatible(seen[c]!, expType)) continue;
         // Slow path: throws, naming the first offending row and column.
         throwOnIncompatibleCell(
@@ -896,7 +900,8 @@ class QueryResultImpl implements QueryResult, WritableQueryResult {
           numColumns,
           c,
           expType,
-          colName,
+          // numColumns === colNames.length, so c is always in range.
+          colNames[c]!,
           row, // Rows already decoded from earlier batches.
           this._errorInfo,
         );
@@ -1364,8 +1369,8 @@ class RowIteratorImpl implements RowIteratorBase {
     // Read the current row.
     for (let i = 0; i < numColumns; i++) {
       const cellType = batchBytes[this.nextCellTypeOff++];
-      const colName = this.columnNames[i];
-      if (colName === undefined) continue;
+      // numColumns === this.columnNames.length, so i is always in range.
+      const colName = this.columnNames[i]!;
       const expType = colTypes[i];
 
       switch (cellType) {
@@ -1493,7 +1498,7 @@ class RowIteratorImpl implements RowIteratorBase {
       numColumns,
       col,
       expType,
-      this.columnNames[col] ?? '',
+      ensureDefined(this.columnNames[col]),
       0,
       this.resultObj.errorInfo,
     );

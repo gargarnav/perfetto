@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {ensureDefined} from '../../../base/assert';
 import {
   getAllNodes,
   getAllDownstreamNodes,
@@ -74,7 +75,7 @@ describe('graph_utils', () => {
       const node = createTestNode();
       const result = getAllNodes([node]);
       expect(result).toHaveLength(1);
-      expect(result[0]!).toBe(node);
+      expect(result[0]).toBe(node);
     });
 
     it('should traverse forward edges (nextNodes)', () => {
@@ -178,7 +179,7 @@ describe('graph_utils', () => {
       const node = createTestNode();
       const result = getAllDownstreamNodes(node);
       expect(result).toHaveLength(1);
-      expect(result[0]!).toBe(node);
+      expect(result[0]).toBe(node);
     });
 
     it('should return all downstream nodes', () => {
@@ -422,7 +423,7 @@ describe('graph_utils', () => {
 
       const result = findDockedChildren(parent, nodeLayouts);
       expect(result).toHaveLength(1);
-      expect(result[0]!).toBe(child);
+      expect(result[0]).toBe(child);
     });
 
     it('should not return child when child has layout (undocked)', () => {
@@ -507,8 +508,10 @@ describe('graph_utils', () => {
 
       const group = result.value;
       expect(group.externalConnections).toHaveLength(1);
-      expect(group.externalConnections[0]!.sourceNode).toBe(ext);
-      expect(group.externalConnections[0]!.innerTargetNode).toBe(a);
+      expect(ensureDefined(group.externalConnections[0]).sourceNode).toBe(ext);
+      expect(ensureDefined(group.externalConnections[0]).innerTargetNode).toBe(
+        a,
+      );
     });
 
     it('should set outer nodes as nextNodes on the group', () => {
@@ -528,7 +531,7 @@ describe('graph_utils', () => {
 
       const group = result.value;
       expect(group.nextNodes).toHaveLength(1);
-      expect(group.nextNodes[0]!).toBe(outer);
+      expect(group.nextNodes[0]).toBe(outer);
     });
 
     it('should reject multiple output nodes', () => {
@@ -790,11 +793,13 @@ describe('graph_utils', () => {
       expect(group.endNode).toBe(c);
       // A feeds into B from outside
       expect(group.externalConnections).toHaveLength(1);
-      expect(group.externalConnections[0]!.sourceNode).toBe(a);
-      expect(group.externalConnections[0]!.innerTargetNode).toBe(b);
+      expect(ensureDefined(group.externalConnections[0]).sourceNode).toBe(a);
+      expect(ensureDefined(group.externalConnections[0]).innerTargetNode).toBe(
+        b,
+      );
       // outer is the successor
       expect(group.nextNodes).toHaveLength(1);
-      expect(group.nextNodes[0]!).toBe(outer);
+      expect(group.nextNodes[0]).toBe(outer);
     });
 
     it('should handle multiple external sources into the group', () => {

@@ -446,11 +446,12 @@ export class MultiTraceController {
     const ref = this.referenceTraceUuid();
     const idx =
       ref === undefined ? -1 : this._traces.findIndex((t) => t.uuid === ref);
-    if (idx <= 0) {
+    const anchor = this._traces[idx];
+    if (idx === 0 || anchor === undefined) {
       return this._traces;
     }
     const copy = [...this._traces];
-    const [anchor] = copy.splice(idx, 1);
+    copy.splice(idx, 1);
     return [anchor, ...copy];
   }
 

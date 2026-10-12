@@ -114,8 +114,9 @@ export function topTable(opts: {
         opts.rows.map((cells) =>
           m(
             'tr',
+            // Each row has exactly one cell per column.
             cells.map((cell, i) =>
-              m(opts.cols[i].num ? 'td.pf-memscope-table__num' : 'td', cell),
+              m(opts.cols[i]!.num ? 'td.pf-memscope-table__num' : 'td', cell),
             ),
           ),
         ),

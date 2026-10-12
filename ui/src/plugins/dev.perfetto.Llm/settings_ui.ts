@@ -120,6 +120,7 @@ export function LlmSettings(): m.Component<LlmSettingsAttrs> {
               onclick: () => {
                 // New providers default to the first registered protocol.
                 const protocol = protocols[0];
+                if (protocol === undefined) return;
                 update(setting, (ps) => [
                   ...ps,
                   {

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {ensureDefined} from '../../../../../base/assert';
 import {SqlSourceNode} from './sql_source';
 import {
   createMockNode,
@@ -89,9 +90,9 @@ describe('SqlSourceNode', () => {
 
       const inputs = node.inputNodesList;
       expect(inputs.length).toBe(3);
-      expect(inputs[0]!).toBe(input0);
-      expect(inputs[1]!).toBe(input1);
-      expect(inputs[2]!).toBe(input2);
+      expect(inputs[0]).toBe(input0);
+      expect(inputs[1]).toBe(input1);
+      expect(inputs[2]).toBe(input2);
     });
   });
 
@@ -121,7 +122,7 @@ describe('SqlSourceNode', () => {
       const sq = node.getStructuredQuery();
       expect(sq).toBeDefined();
       expect(sq?.sql?.dependencies?.length).toBe(1);
-      expect(sq?.sql?.dependencies?.[0]!.alias).toBe('input_0');
+      expect(ensureDefined(sq?.sql?.dependencies?.[0]).alias).toBe('input_0');
     });
 
     it('should include multiple dependencies with correct aliases', () => {

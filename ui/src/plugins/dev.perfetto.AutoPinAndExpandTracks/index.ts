@@ -66,6 +66,9 @@ export default class AutoPinAndExpandTracks implements PerfettoPlugin {
         return;
       }
       const file = e.target.files[0];
+      if (file === undefined) {
+        return;
+      }
       const textPromise = file.text();
 
       // Reset the value so onchange will be fired with the same file.

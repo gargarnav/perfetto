@@ -117,11 +117,9 @@ export class UnionNode implements QueryNode {
     if (firstNode === undefined) {
       return [];
     }
-    let commonCols = firstNode.finalCols.map((col) =>
-      newColumnInfo(col, true),
-    );
-    for (let i = 1; i < validPrevNodes.length; i++) {
-      const currentNodeCols = validPrevNodes[i]!.finalCols;
+    let commonCols = firstNode.finalCols.map((col) => newColumnInfo(col, true));
+    for (const node of validPrevNodes.slice(1)) {
+      const currentNodeCols = node.finalCols;
       commonCols = commonCols.filter((commonCol) =>
         currentNodeCols.some(
           (currentNodeCol) => currentNodeCol.name === commonCol.name,

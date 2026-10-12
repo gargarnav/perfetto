@@ -66,7 +66,7 @@ export class HistogramSvg implements m.ClassComponent<HistogramAttrs> {
       const fmtY = attrs.formatYValue ?? formatNumber;
       const idx = this.hover.index;
       const bucket = data.buckets[idx];
-      const isNull = idx >= data.buckets.length || bucket === undefined;
+      const isNull = bucket === undefined;
       const nCount = data.nullCount ?? 0;
       const totalWithNull = data.totalCount + nCount;
       const count = isNull ? nCount : bucket.count;
@@ -403,29 +403,29 @@ export class HistogramSvg implements m.ClassComponent<HistogramAttrs> {
         const last = buckets[buckets.length - 1];
         if (last === undefined) return null;
         const x = slotX(dataSlots - 1) + adjBarWidth;
-          return m('g', [
-            m('line', {
-              className: 'pf-chart-svg__line',
-              x1: x,
-              y1: padTop + plotH,
-              x2: x,
-              y2: padTop + plotH + TICK_LENGTH,
-              stroke: 'currentColor',
-            }),
-            m(
-              'text',
-              {
-                'className': 'pf-chart-svg__tick-label',
-                'x': x,
-                'y': padTop + plotH + TICK_LENGTH + TICK_LABEL_GAP,
-                'fill': 'currentColor',
-                'text-anchor': 'middle',
-                'dominant-baseline': 'hanging',
-              },
-              fmtX(last.end),
-            ),
-          ]);
-        })(),
+        return m('g', [
+          m('line', {
+            className: 'pf-chart-svg__line',
+            x1: x,
+            y1: padTop + plotH,
+            x2: x,
+            y2: padTop + plotH + TICK_LENGTH,
+            stroke: 'currentColor',
+          }),
+          m(
+            'text',
+            {
+              'className': 'pf-chart-svg__tick-label',
+              'x': x,
+              'y': padTop + plotH + TICK_LENGTH + TICK_LABEL_GAP,
+              'fill': 'currentColor',
+              'text-anchor': 'middle',
+              'dominant-baseline': 'hanging',
+            },
+            fmtX(last.end),
+          ),
+        ]);
+      })(),
       // NULL label under the NULL bar.
       hasNull &&
         m(

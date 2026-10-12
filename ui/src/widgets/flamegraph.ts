@@ -14,7 +14,12 @@
 
 import './flamegraph.scss';
 import m from 'mithril';
-import {ensureExists, assertTrue, assertUnreachable} from '../base/assert';
+import {
+  ensureExists,
+  ensureDefined,
+  assertTrue,
+  assertUnreachable,
+} from '../base/assert';
 import {Monitor} from '../base/monitor';
 import {Button, ButtonBar} from './button';
 import {copyToClipboard} from '../base/clipboard';
@@ -322,7 +327,9 @@ export class Flamegraph implements m.ClassComponent<FlamegraphAttrs> {
                 this.tooltipPos = undefined;
                 return;
               }
-              const renderNode = this.renderNodes![newHoveredIdx];
+              const renderNode = ensureDefined(
+                this.renderNodes![newHoveredIdx],
+              );
               this.tooltipPos = {
                 x: offsetX,
                 y: renderNode.y,
@@ -485,7 +492,9 @@ export class Flamegraph implements m.ClassComponent<FlamegraphAttrs> {
         name = '(merged)';
         colorScheme = getFlamegraphColorScheme(name, state === 'PARTIAL');
       } else {
-        name = nodes[source.queryIdx].name;
+        // queryIdx is always a valid index into nodes (see
+        // computeRenderNodes).
+        name = nodes[source.queryIdx]!.name;
         colorScheme = getFlamegraphColorScheme(name, state === 'PARTIAL');
       }
       const highlighted =
@@ -502,7 +511,7 @@ export class Flamegraph implements m.ClassComponent<FlamegraphAttrs> {
       const MIN_WIDTH_FOR_MARKER = 15; // Don't show marker on very small nodes
       const hasMarker =
         source.kind === 'NODE' &&
-        nodes[source.queryIdx].marker !== undefined &&
+        nodes[source.queryIdx]!.marker !== undefined &&
         width >= MIN_WIDTH_FOR_MARKER;
       if (hasMarker) {
         ctx.fillStyle = textColor.cssString;
@@ -593,6 +602,7 @@ export class Flamegraph implements m.ClassComponent<FlamegraphAttrs> {
       );
     }
     const {queryIdx} = source;
+    const node = ensureDefined(nodes[queryIdx]);
     const {
       name,
       cumulativeValue,
@@ -600,7 +610,7 @@ export class Flamegraph implements m.ClassComponent<FlamegraphAttrs> {
       parentCumulativeValue,
       properties,
       marker,
-    } = nodes[queryIdx];
+    } = node;
 
     const percent = displayPercentage(
       cumulativeValue,
@@ -659,7 +669,7 @@ export class Flamegraph implements m.ClassComponent<FlamegraphAttrs> {
         }
         return null;
       }),
-      this.renderNodeActionBar(source, name, nodes[queryIdx], nodeActions),
+      this.renderNodeActionBar(source, name, node, nodeActions),
     );
   }
 
@@ -1191,7 +1201,8 @@ function computeRenderNodes(
       const mergedXKey = `${id}_${depth > 0 ? depth + 1 : depth - 1}`;
       const childMergedIdx = keyToChildMergedIdx.get(parentChildMergeKey);
       if (childMergedIdx !== undefined) {
-        const r = renderNodes[childMergedIdx];
+        // keyToChildMergedIdx only stores indices of pushed renderNodes.
+        const r = renderNodes[childMergedIdx]!;
         const mergedWidth = isDepthMatchingZoom(depth, zoomRegion)
           ? Math.min(qXEnd - r.source.queryXStart, zoomQueryWidth) / queryXPerPx
           : (qXEnd - r.source.queryXStart) / queryXPerPx;

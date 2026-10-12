@@ -46,6 +46,7 @@ import {Billboard, BillboardStrip} from '../../components/billboard';
 import {ColorChip, chipColor} from '../../components/color_chip';
 import {billboardBytes, maxSeriesKb, niceKbInterval} from '../../utils';
 import {formatBytesIec} from '../../../../base/bytes_format';
+import {assertDefined} from '../../../../base/assert';
 import {
   type ProcessGrouping,
   type ProcessMetric,
@@ -64,11 +65,13 @@ function sparkline(
   width = 64,
   height = 16,
 ): m.Children {
-  if (values.length < 2) {
+  const first = values[0];
+  const last = values[values.length - 1];
+  if (first === undefined || last === undefined || values.length < 2) {
     return m('span.pf-memscope-sparkline-empty', '—');
   }
-  let min = values[0]!;
-  let max = values[0]!;
+  let min = first;
+  let max = first;
   for (const v of values) {
     if (v < min) min = v;
     if (v > max) max = v;
@@ -84,8 +87,6 @@ function sparkline(
       return `${x},${y}`;
     })
     .join(' ');
-  const last = values[values.length - 1]!;
-  const first = values[0]!;
   const stroke =
     last > first
       ? 'var(--pf-color-danger)'
@@ -294,7 +295,8 @@ function buildProcessDrilldown(
   if (rest.length > 0) {
     const otherPoints = timestamps.map((ts, i) => ({
       x: (ts - t0) / 1e9,
-      y: rest.reduce((sum, r) => sum + r.points[i].y, 0),
+      // Each process's points array has one entry per timestamp.
+      y: rest.reduce((sum, r) => sum + r.points[i]!.y, 0),
     }));
     series.push({
       name: `Other (${rest.length} processes)`,
@@ -328,6 +330,7 @@ function buildOomDrilldown(
   counters: readonly string[],
 ): LineChartData | undefined {
   const bucket = OOM_SCORE_BUCKETS[bucketIdx];
+  assertDefined(bucket);
   const oomByUpid = new Map<number, number>();
   for (const [upid, counterMap] of data.processCountersByUpid) {
     const samples = counterMap.get('oom_score_adj');

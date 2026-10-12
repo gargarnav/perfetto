@@ -22,7 +22,7 @@ import type {
   Transform1D,
   VerticalBounds,
 } from '../../base/geom';
-import {ensureExists} from '../../base/assert';
+import {ensureExists, ensureDefined} from '../../base/assert';
 import {Monitor} from '../../base/monitor';
 import {
   type CancellationSignal,
@@ -929,7 +929,7 @@ export class SliceTrack<T extends RowSchema> implements TrackRenderer {
     const countCol = cols.__count;
     const depthCol = cols.__depth;
     const schemaKeys = Object.keys(dataset.schema);
-    const schemaCols = schemaKeys.map((k) => cols[k]);
+    const schemaCols = schemaKeys.map((k) => ensureDefined(cols[k]));
     const xs = new Float32Array(tsCol);
     const depths = new Uint16Array(depthCol);
 
@@ -950,11 +950,11 @@ export class SliceTrack<T extends RowSchema> implements TrackRenderer {
       const colorScheme = this.getColor(row, title);
 
       instants[i] = {
-        id: idCol[i],
+        id: idCol[i]!,
         title,
         subtitle,
         colorScheme,
-        count: countCol[i],
+        count: countCol[i]!,
         row,
       };
     }
@@ -1038,7 +1038,7 @@ export class SliceTrack<T extends RowSchema> implements TrackRenderer {
     const depthCol = cols.__depth;
     const incompleteCol = cols.__incomplete;
     const schemaKeys = Object.keys(dataset.schema);
-    const schemaCols = schemaKeys.map((k) => cols[k]);
+    const schemaCols = schemaKeys.map((k) => ensureDefined(cols[k]));
 
     const starts = new Float32Array(startCol);
     const ends = new Float32Array(count);
@@ -1056,7 +1056,7 @@ export class SliceTrack<T extends RowSchema> implements TrackRenderer {
       const title = this.getTitle(row);
       const subtitle = this.getSubtitle(row);
       const colorScheme = this.getColor(row, title);
-      const end = endCol[i];
+      const end = endCol[i]!;
       const isIncomplete = incompleteCol[i] === 1;
 
       // Incomplete slices are assigned a +Infinity end
@@ -1065,11 +1065,11 @@ export class SliceTrack<T extends RowSchema> implements TrackRenderer {
         ? RECT_PATTERN_FADE_RIGHT
         : (this.attrs.slicePattern?.(row) ?? 0);
       slices[i] = {
-        id: idCol[i],
+        id: idCol[i]!,
         title,
         subtitle,
         colorScheme,
-        count: countCol[i],
+        count: countCol[i]!,
         fillRatio: this.attrs.fillRatio?.(row) ?? 1,
         row,
       };
@@ -1094,7 +1094,8 @@ export class SliceTrack<T extends RowSchema> implements TrackRenderer {
   ): InferRowType<T> {
     const row: Record<string, SqlValue> = {};
     for (const [k, key] of keys.entries()) {
-      row[key] = cols[k][i];
+      // keys and cols have matching lengths, and i < the column length.
+      row[key] = cols[k]![i]!;
     }
     return row as InferRowType<T>;
   }

@@ -81,12 +81,13 @@ const LONG_TYPE_RE = /^[A-Z]*\(([a-z_]*)\.([a-z_]*)\)/;
 
 function toArgOrCol(e: RawEntry): ArgOrCol {
   const m = LONG_TYPE_RE.exec(e.type);
+  // Both capture groups are mandatory, so they exist if the regex matched.
   return {
     name: e.name,
     type: e.type,
     desc: e.description,
-    table: m ? m[1] : null,
-    column: m ? m[2] : null,
+    table: m ? m[1]! : null,
+    column: m ? m[2]! : null,
   };
 }
 

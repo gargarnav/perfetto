@@ -220,10 +220,8 @@ export function renderExtensionServersSettings(
             servers
               .map((server, idx) => ({server, idx}))
               .sort((a, b) => {
-                const aManaged =
-                  a.server.origin === 'embedder_managed' ? 0 : 1;
-                const bManaged =
-                  b.server.origin === 'embedder_managed' ? 0 : 1;
+                const aManaged = a.server.origin === 'embedder_managed' ? 0 : 1;
+                const bManaged = b.server.origin === 'embedder_managed' ? 0 : 1;
                 return aManaged - bManaged || a.idx - b.idx;
               })
               .map(({server, idx}) => {
@@ -369,7 +367,7 @@ async function maybeAddExtServerFromUrl(
   const servers = setting.get();
   const dupIdx = servers.findIndex((s) => sameServerLocation(s, prefill));
   const dupServer = servers[dupIdx];
-  if (dupIdx !== -1 && dupServer !== undefined) {
+  if (dupServer !== undefined) {
     // Server already configured — replace its enabled modules with those from
     // the shared link and open the edit modal so the user can review.
     await editServer(setting, dupIdx, {

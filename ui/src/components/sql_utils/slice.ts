@@ -194,8 +194,10 @@ export async function getDescendantSliceTree(
   for (const [_, slice] of Object.entries(slices)) {
     if (slice.parentId !== undefined) {
       const parent = slices[slice.parentId];
-      slice.parent = parent;
-      parent.children.push(slice);
+      if (parent !== undefined) {
+        slice.parent = parent;
+        parent.children.push(slice);
+      }
     }
   }
   return slices[id];

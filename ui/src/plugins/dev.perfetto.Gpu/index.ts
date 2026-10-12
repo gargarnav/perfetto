@@ -663,7 +663,8 @@ export default class GpuPlugin implements PerfettoPlugin {
       const gpu =
         gpuId !== null
           ? new Gpu(
-              ugpu ?? trackIds[0],
+              // split() always returns at least one element.
+              ugpu ?? trackIds[0]!,
               gpuId,
               machineId,
               gpuName ?? undefined,

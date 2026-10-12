@@ -61,6 +61,11 @@ export function formatRows(
     const formattedRow: Record<string, string> = {};
     for (const colAlias of columns) {
       const value = row[colAlias];
+      if (value === undefined) {
+        // Missing values export as empty cells.
+        formattedRow[colAlias] = '';
+        continue;
+      }
       // Use field path for schema lookup if provided, otherwise use alias
       const fieldPath = aliasToField?.[colAlias] ?? colAlias;
       const formatter = schema

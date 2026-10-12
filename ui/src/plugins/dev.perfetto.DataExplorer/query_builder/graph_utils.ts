@@ -695,7 +695,8 @@ export function createGroupFromSelection(
     (n) => !n.nextNodes.some((next) => innerSet.has(next.nodeId)),
   );
 
-  if (endNodes.length === 0) {
+  const endNode = endNodes[0];
+  if (endNode === undefined) {
     return errResult(
       'Cannot create group: the selected nodes form a cycle with no output.',
     );
@@ -706,8 +707,6 @@ export function createGroupFromSelection(
         'The group must have exactly one output node.',
     );
   }
-
-  const endNode = endNodes[0]!;
 
   // Collect all external connections (sources outside the group → inner nodes).
   const externalConnections: ExternalGroupConnection[] = [];

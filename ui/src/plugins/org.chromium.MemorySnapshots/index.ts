@@ -217,7 +217,10 @@ class MemorySnapshotsTab implements m.ClassComponent<{trace: Trace}> {
       });
     }
     // Select first snapshot by default
-    this.selectedSnapshotId = this.snapshots[0]?.id;
+    const firstSnapshot = this.snapshots[0];
+    if (firstSnapshot !== undefined) {
+      this.selectedSnapshotId = firstSnapshot.id;
+    }
   }
 
   view({attrs}: m.CVnode<{trace: Trace}>) {

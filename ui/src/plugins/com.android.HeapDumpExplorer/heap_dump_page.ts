@@ -54,7 +54,7 @@ function instanceTabKey(objId: number): string {
 
 function activeTabKey(session: HeapDumpExplorerSession): string {
   const tabs = session.flamegraphTabs;
-  if (session.nav.view === 'flamegraph-objects' && tabs.length > 0) {
+  if (session.nav.view === 'flamegraph-objects') {
     const active = session.activeFlamegraph;
     const tab =
       (active &&
@@ -64,7 +64,9 @@ function activeTabKey(session: HeapDumpExplorerSession): string {
             t.isDominator === active.isDominator,
         )) ||
       tabs[tabs.length - 1];
-    return fgTabKey(tab.pathHashes, tab.isDominator);
+    if (tab !== undefined) {
+      return fgTabKey(tab.pathHashes, tab.isDominator);
+    }
   }
   const objId = session.activeInstanceObjId;
   if (objId !== null) {

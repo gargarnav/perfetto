@@ -176,12 +176,8 @@ export class PivotTreeNode {
 
   // Get the value of the aggregation at the given index.
   getAggregationValue(index: number): SqlValue {
-    const agg = this.config.aggregations[index];
-    if (agg === undefined) return null;
-    return getAggregationValueImpl(
-      agg,
-      this.aggregationValues,
-    );
+    const agg = ensureDefined(this.config.aggregations[index]);
+    return getAggregationValueImpl(agg, this.aggregationValues);
   }
 
   // List all of the descendants of this node, respecting `collapsed` state.
@@ -242,7 +238,7 @@ export class PivotTreeNode {
 
   private getFilter(): Filter {
     return StandardFilters.valueEquals(
-      this.config.pivots[this.getPivotIndex()]!.column,
+      ensureDefined(this.config.pivots[this.getPivotIndex()]).column,
       ensureDefined(this.pivotValue),
     );
   }

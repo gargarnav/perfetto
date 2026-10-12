@@ -16,7 +16,7 @@ import m from 'mithril';
 import {classNames} from '../base/classnames';
 import {findRef} from '../base/dom_utils';
 import {fuzzySearch, type FuzzySegment} from '../base/fuzzy';
-import {ensureExists, assertUnreachable} from '../base/assert';
+import {ensureExists, ensureDefined, assertUnreachable} from '../base/assert';
 import {isString} from '../base/object_utils';
 import {exists} from '../base/utils';
 import {AppImpl} from '../core/app_impl';
@@ -131,7 +131,7 @@ export class Omnibox implements m.ClassComponent<OmniboxAttrs> {
       searchTerm,
     ).map((result) => {
       return {
-        segments: result.segments[0],
+        segments: ensureDefined(result.segments[0]),
         sourceSegments: result.item.source ? result.segments[1] : undefined,
         ...result.item,
       };
@@ -566,13 +566,7 @@ class OmniboxWidget implements m.ClassComponent<OmniboxWidgetAttrs> {
                   e.preventDefault();
 
                   const option = options[selectedOptionIndex];
-                  // Return values from indexing arrays can be undefined.
-                  // We should enable noUncheckedIndexedAccess in
-                  // tsconfig.json.
-                  /* eslint-disable
-                      @typescript-eslint/strict-boolean-expressions */
                   if (option) {
-                    /* eslint-enable */
                     closeOnSubmit && this.close(attrs);
 
                     const mod = e.metaKey || e.ctrlKey;

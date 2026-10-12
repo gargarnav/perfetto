@@ -33,6 +33,7 @@
 
 import m from 'mithril';
 
+import {ensureDefined} from '../../../../base/assert';
 import {classNames} from '../../../../base/classnames';
 import {Icons} from '../../../../base/semantic_icons';
 import {Button, ButtonVariant} from '../../../../widgets/button';
@@ -978,7 +979,7 @@ export class Graph implements m.ClassComponent<GraphAttrs> {
           },
           onConnectionRemove: (index: number) => {
             handleConnectionRemove(
-              connections[index],
+              ensureDefined(connections[index]),
               rootNodes,
               attrs.onConnectionRemove,
             );

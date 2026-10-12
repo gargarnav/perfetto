@@ -27,6 +27,7 @@ import {
 } from '../../../../trace_processor/perfetto_sql_type';
 import type protos from '../../../../protos';
 import m from 'mithril';
+import {ensureDefined} from '../../../../base/assert';
 import {Select} from '../../../../widgets/select';
 import {Button, ButtonVariant} from '../../../../widgets/button';
 import {TextInput} from '../../../../widgets/text_input';
@@ -1211,7 +1212,7 @@ export class AddColumnsNode implements QueryNode {
       if (!this.attrs.computedColumns) return;
       const newComputedColumns = [...this.attrs.computedColumns];
       newComputedColumns[index] = {
-        ...newComputedColumns[index],
+        ...ensureDefined(newComputedColumns[index]),
         sqlType: newType,
       };
       this.attrs.computedColumns = newComputedColumns;

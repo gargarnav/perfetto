@@ -273,11 +273,10 @@ export class SQLSchemaResolver {
     schema: SQLTableSchema,
     currentAlias: string,
   ): string | undefined {
-    if (parts.length === 0) {
+    const [first, ...rest] = parts;
+    if (first === undefined) {
       return undefined;
     }
-
-    const [first, ...rest] = parts;
     const colDef = schema.columns?.[first];
 
     if (!colDef) {
@@ -396,11 +395,10 @@ export class SQLSchemaResolver {
     schema: SQLTableSchema,
     currentAlias: string,
   ): {colDef: SQLExpressionDef; targetAlias: string} | undefined {
-    if (parts.length === 0) {
+    const [first, ...rest] = parts;
+    if (first === undefined) {
       return undefined;
     }
-
-    const [first, ...rest] = parts;
     const colDef = schema.columns?.[first];
     if (!colDef) {
       return undefined;

@@ -91,7 +91,6 @@ export function sleepMs(ms: number): Promise<void> {
   });
 }
 
-
 // Check if the value a number or a bigint
 export function isNumeric(value: unknown): value is number | bigint {
   return typeof value === 'number' || typeof value === 'bigint';

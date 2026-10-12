@@ -19,6 +19,7 @@ import {runQueryForQueryTable} from '../../components/query_table/queries';
 import {QueryResultsTab} from './query_result_tab';
 import {type ResultsData, ResultsTable} from './results_table';
 import {undoCommonChatAppReplacements} from '../../base/string_utils';
+import {ensureDefined} from '../../base/assert';
 import type {App} from '../../public/app';
 import type {PerfettoPlugin} from '../../public/plugin';
 import type {Setting} from '../../public/settings';
@@ -207,7 +208,7 @@ export default class QueryPagePlugin implements PerfettoPlugin {
       persistedState &&
       editorTabs.some((t) => t.id === persistedState.activeTabId)
         ? persistedState.activeTabId
-        : editorTabs[0].id;
+        : ensureDefined(editorTabs[0]).id;
 
     // Helper to find the active tab
     function getActiveTab(): QueryEditorTab | undefined {
@@ -256,7 +257,7 @@ export default class QueryPagePlugin implements PerfettoPlugin {
       // If we closed the active tab, switch to an adjacent one
       if (activeTabId === tabId) {
         const newIndex = Math.min(index, editorTabs.length - 1);
-        activeTabId = editorTabs[newIndex].id;
+        activeTabId = ensureDefined(editorTabs[newIndex]).id;
       }
 
       debouncedSave();
@@ -290,10 +291,11 @@ export default class QueryPagePlugin implements PerfettoPlugin {
       beforeTabId: string | undefined,
     ) {
       const draggedIndex = editorTabs.findIndex((t) => t.id === draggedTabId);
-      if (draggedIndex === -1) return;
+      const draggedTab = editorTabs[draggedIndex];
+      if (draggedTab === undefined) return;
 
       // Remove the dragged tab
-      const [draggedTab] = editorTabs.splice(draggedIndex, 1);
+      editorTabs.splice(draggedIndex, 1);
 
       // Find where to insert it
       if (beforeTabId === undefined) {

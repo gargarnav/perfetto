@@ -246,12 +246,6 @@ export function OverviewView(): m.Component<OverviewViewAttrs> {
         onDismissDefaultChangedHint,
       } = vnode.attrs;
       const showHint = showDefaultChangedHint;
-      const heapIndices: number[] = [];
-      for (const [i, h] of overview.heaps.entries()) {
-        if (h.java + h.native_ > 0) {
-          heapIndices.push(i);
-        }
-      }
       const heaps = overview.heaps.filter((h) => h.java + h.native_ > 0);
       const totalJava = heaps.reduce((a, h) => a + h.java, 0);
       const totalNative = heaps.reduce((a, h) => a + h.native_, 0);

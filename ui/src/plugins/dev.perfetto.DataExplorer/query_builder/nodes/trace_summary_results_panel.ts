@@ -306,11 +306,11 @@ export class TraceSummaryResultsPanel implements m.ClassComponent<TraceSummaryRe
             title: 'No metric data returned',
           });
         }
-        if (bundles.length === 1) {
-          const bundle = bundles[0]!;
+        const onlyBundle = bundles.length === 1 ? bundles[0] : undefined;
+        if (onlyBundle !== undefined) {
           return m(DataGrid, {
-            data: bundle.rows,
-            schema: bundle.schema,
+            data: onlyBundle.rows,
+            schema: onlyBundle.schema,
             fillHeight: true,
           });
         }

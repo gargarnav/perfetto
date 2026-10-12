@@ -1138,12 +1138,12 @@ export async function getInstance(
       const jit = jsonRes.iter({data: STR_NULL});
       if (jit.valid() && jit.data !== null) {
         const values = JSON.parse(jit.data) as Array<number | string | boolean>;
-        for (let i = 0; i < values.length; i++) {
+        for (const [i, v] of values.entries()) {
           arrayElems.push({
             idx: i,
             value: {
               kind: 'prim',
-              v: formatPrimValue(arrayElementType, values[i]),
+              v: formatPrimValue(arrayElementType, v),
             },
           });
         }
@@ -1525,8 +1525,10 @@ async function computeBitmapDumpData(
   const bufferMap = new Map<bigint, number>();
   const count = Math.min(nativesPtrs.length, bufferObjIds.length);
   for (let i = 0; i < count; i++) {
-    if (bufferObjIds[i] !== undefined && bufferObjIds[i] !== 0) {
-      bufferMap.set(nativesPtrs[i], bufferObjIds[i]);
+    const bufferObjId = bufferObjIds[i];
+    if (bufferObjId !== undefined && bufferObjId !== 0) {
+      // i < count <= nativesPtrs.length, so this is in range.
+      bufferMap.set(nativesPtrs[i]!, bufferObjId);
     }
   }
 

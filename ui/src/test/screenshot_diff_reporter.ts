@@ -139,7 +139,7 @@ export default class ScreenshotDiffReporter implements Reporter {
       if (m === null || a.path === undefined || !fs.existsSync(a.path)) {
         continue;
       }
-      const screenshotName = m[1];
+      const screenshotName = m[1]!;
       const role = m[2] as Role;
       let failure = byName.get(screenshotName);
       if (failure === undefined) {

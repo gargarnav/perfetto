@@ -74,18 +74,21 @@ export function translateState(
   if (state === null) {
     return 'Unknown';
   }
-  let result = states[state[0]];
+  const first = states[state.charAt(0)];
+  // state is some string we don't know how to translate.
+  if (first === undefined) return state;
+  let result = first;
   if (ioWait === true) {
     result += ' (IO)';
   } else if (ioWait === false) {
     result += ' (non-IO)';
   }
-  for (let i = 1; i < state.length; i++) {
-    result += state[i] === '+' ? ' ' : ' + ';
-    result += states[state[i]];
+  for (const ch of state.slice(1)) {
+    const translated = states[ch];
+    if (translated === undefined) return state;
+    result += ch === '+' ? ' ' : ' + ';
+    result += translated;
   }
-  // state is some string we don't know how to translate.
-  if (result === undefined) return state;
 
   return result;
 }

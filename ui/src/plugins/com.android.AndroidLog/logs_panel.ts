@@ -236,11 +236,13 @@ export class LogPanel implements m.ClassComponent<LogPanelAttrs> {
     const processNames = entries.processName;
 
     const rows: GridRow[] = [];
-    for (let i = 0; i < entries.timestamps.length; i++) {
-      const priority = priorities[i];
-      const priorityLetter = LOG_PRIORITIES[priority][0];
-      const ts = timestamps[i];
-      const eventId = ids[i];
+    // All the entries arrays are parallel arrays with the same length.
+    for (const [i, ts] of timestamps.entries()) {
+      const priority = priorities[i]!;
+      // Unknown priorities fall back to '?' below.
+      const priorityLetter = LOG_PRIORITIES[priority]?.[0];
+      const eventId = ids[i]!;
+      const machineId = machineIds[i]!;
       const priorityClass = `pf-logs-panel__row--${classForPriority(priority)}`;
       const isHighlighted = entries.isHighlighted[i];
       const className = classNames(
@@ -253,7 +255,7 @@ export class LogPanel implements m.ClassComponent<LogPanelAttrs> {
           m(
             GridCell,
             {className, align: 'right'},
-            machineNames.get(machineIds[i]) ?? machineIds[i],
+            machineNames.get(machineId) ?? machineId,
           ),
         m(
           GridCell,

@@ -14,7 +14,7 @@
 
 import m from 'mithril';
 import {z} from 'zod';
-import {assertTrue} from '../../base/assert';
+import {assertDefined, assertTrue} from '../../base/assert';
 import {Card, CardStack} from '../../widgets/card';
 import {Button} from '../../widgets/button';
 import {Icons} from '../../base/semantic_icons';
@@ -174,7 +174,7 @@ export class RecentGraphsStorage {
    */
   setStarred(index: number, starred: boolean): void {
     const entry = this._data[index];
-    if (entry === undefined) return;
+    assertDefined(entry);
     entry.starred = starred;
     this.save();
   }
@@ -184,7 +184,7 @@ export class RecentGraphsStorage {
    */
   rename(index: number, newName: string): void {
     const entry = this._data[index];
-    if (entry === undefined) return;
+    assertDefined(entry);
     entry.name = newName.trim() || entry.name;
     this.save();
   }
@@ -415,9 +415,8 @@ export class RecentGraphsSection implements m.ClassComponent<RecentGraphsSection
     const starred: Array<{entry: RecentGraphEntry; index: number}> = [];
     const unstarred: Array<{entry: RecentGraphEntry; index: number}> = [];
 
-    for (let i = 1; i < recentGraphs.length; i++) {
-      const entry = recentGraphs[i];
-      if (entry === undefined) continue;
+    for (const [i, entry] of recentGraphs.entries()) {
+      if (i === 0) continue;
       // Skip empty placeholders (working slots with no content)
       if ((entry.nodeCount ?? 0) === 0) continue;
 

@@ -14,6 +14,7 @@
 
 import {beforeEach, describe, expect, test} from 'vitest';
 import {z} from 'zod';
+import {ensureDefined} from '../../base/assert';
 import {
   applyModeDefaults,
   applyPresetSetup,
@@ -349,7 +350,7 @@ describe('cloneTab', () => {
       },
     ];
     expect(src.traceFilters).toHaveLength(1);
-    expect(src.querySettings[0].values).toEqual(['/traces']);
+    expect(ensureDefined(src.querySettings[0]).values).toEqual(['/traces']);
   });
 
   test('an unknown id is a no-op', () => {
@@ -454,7 +455,7 @@ describe('Settings session (Cancel restores, Apply keeps)', () => {
     openSettings(tab);
     edit(tab);
     closeSettings(tab, {keep: true});
-    expect(tab.querySettings[0].values).toEqual(['/other']);
+    expect(ensureDefined(tab.querySettings[0]).values).toEqual(['/other']);
     expect(tab.traceFilters).toEqual([]);
     expect(tab.limit).toBe(10);
     expect(tab.traceLimit).toBe(11);
@@ -466,10 +467,10 @@ describe('Settings session (Cancel restores, Apply keeps)', () => {
   test('the snapshot is a copy: later mutation of the tab does not reach it', () => {
     const tab = workingTab();
     openSettings(tab);
-    tab.querySettings[0].values.push('/extra');
+    ensureDefined(tab.querySettings[0]).values.push('/extra');
     (tab.traceFilters as unknown[]).push({field: 'x', op: 'is null'});
     closeSettings(tab, {keep: false});
-    expect(tab.querySettings[0].values).toEqual(['/traces']);
+    expect(ensureDefined(tab.querySettings[0]).values).toEqual(['/traces']);
     expect(tab.traceFilters).toHaveLength(1);
   });
 
@@ -477,8 +478,8 @@ describe('Settings session (Cancel restores, Apply keeps)', () => {
     const tab = workingTab();
     const snap = snapshotTabConfig(tab);
     restoreTabConfig(tab, snap);
-    tab.querySettings[0].values.push('/extra');
-    expect(snap.querySettings[0].values).toEqual(['/traces']);
+    ensureDefined(tab.querySettings[0]).values.push('/extra');
+    expect(ensureDefined(snap.querySettings[0]).values).toEqual(['/traces']);
   });
 
   test('a new tab starting its first query has no session and keeps its setup', () => {
@@ -602,7 +603,7 @@ describe('trace UUID selection mode', () => {
     expect(traceUuidsActive(tab)).toBe(true);
     // Filter-mode configuration is hidden, not cleared...
     expect(tab.traceFilters).toHaveLength(1);
-    expect(tab.querySettings[0].values).toEqual(['/traces']);
+    expect(ensureDefined(tab.querySettings[0]).values).toEqual(['/traces']);
     // ...and an earlier stint's values survive re-entry.
     expect(
       tab.querySettings.find((s) => s.settingId === TRACE_UUIDS_SETTING_ID)
@@ -761,7 +762,7 @@ describe('experiment filter', () => {
     );
     const tabs = new QueryTabsState();
     expect(tabs.tabs).toHaveLength(1);
-    expect(tabs.tabs[0].experimentFilter).toBeUndefined();
+    expect(ensureDefined(tabs.tabs[0]).experimentFilter).toBeUndefined();
   });
 
   test('a preset naming an experiment runs the query over it', () => {

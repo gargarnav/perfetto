@@ -44,9 +44,9 @@ export function browserAboveMinimumVersion(
   const runVerArray = runningVersion.split('.').map(Number);
 
   for (const [index, minVer] of minVerArray.entries()) {
-    const runVer = runVerArray[index] ?? 0;
+    const runVer = runVerArray[index];
     if (runVer === minVer) continue;
-    return runVer > minVer;
+    return runVer !== undefined && runVer > minVer;
   }
   return true; // Exact version match.
 }

@@ -416,8 +416,9 @@ export class UnionDataset<
 
     // If we merged everything into a single dataset, use its query directly
     // Pass the querySchema to enable column and join elimination
-    if (mergedDatasets.length === 1) {
-      return mergedDatasets[0]!.query(querySchema);
+    const onlyDataset = mergedDatasets[0];
+    if (onlyDataset !== undefined && mergedDatasets.length === 1) {
+      return onlyDataset.query(querySchema);
     }
 
     // Generate union query from merged datasets
@@ -674,8 +675,9 @@ WHERE FALSE`;
     }
 
     // Single group - no need for UNION
-    if (groupQueries.length === 1) {
-      return groupQueries[0]!;
+    const onlyQuery = groupQueries[0];
+    if (onlyQuery !== undefined && groupQueries.length === 1) {
+      return onlyQuery;
     }
 
     // Small number of groups - use simple UNION ALL

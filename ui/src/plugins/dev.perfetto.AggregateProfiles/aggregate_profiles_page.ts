@@ -100,8 +100,9 @@ export class AggregateProfilesPage implements m.ClassComponent<AggregateProfiles
       (p) => p.id === attrs.state.selectedProfileId,
     );
     const next = Math.max(cur, 0) + step;
-    if (next >= 0 && next < attrs.profiles.length) {
-      this.selectProfile(attrs, attrs.profiles[next]);
+    const profile = attrs.profiles[next];
+    if (profile !== undefined) {
+      this.selectProfile(attrs, profile);
     }
   }
 

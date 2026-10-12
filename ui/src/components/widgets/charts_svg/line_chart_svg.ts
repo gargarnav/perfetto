@@ -15,6 +15,7 @@
 import m from 'mithril';
 import {classNames} from '../../../base/classnames';
 import {max, min} from '../../../base/array_utils';
+import {ensureDefined} from '../../../base/assert';
 import {clamp} from '../../../base/math_utils';
 import {exists} from '../../../base/utils';
 import {shortUuid} from '../../../base/uuid';
@@ -606,7 +607,8 @@ export class LineChartSvg implements m.ClassComponent<LineChartAttrs> {
       return;
     }
     const firstPlot = seriesPlots[0];
-    if (firstPlot === undefined || firstPlot.points.length === 0) return;
+    const firstPt = firstPlot?.points[0];
+    if (firstPlot === undefined || firstPt === undefined) return;
     const px = e.clientX - rect.left;
     if (px < padLeft || px > padLeft + plotW) {
       if (this.hover !== undefined) {
@@ -619,18 +621,16 @@ export class LineChartSvg implements m.ClassComponent<LineChartAttrs> {
     // Nearest index in series 0 (assumes shared x; first series is reference).
     const pts = firstPlot.points;
     let bestIdx = 0;
+    let bestPt = firstPt;
     let bestDist = Infinity;
-    for (let i = 0; i < pts.length; i++) {
-      const pt = pts[i];
-      if (pt === undefined) continue;
+    for (const [i, pt] of pts.entries()) {
       const d = Math.abs(pt.x - xVal);
       if (d < bestDist) {
         bestDist = d;
         bestIdx = i;
+        bestPt = pt;
       }
     }
-    const bestPt = pts[bestIdx];
-    if (bestPt === undefined) return;
     this.hover = {
       clientX: e.clientX,
       clientY: e.clientY,
@@ -694,28 +694,24 @@ function areaPath(
   yToPx: (y: number) => number,
   baselinePx: number,
 ): string {
-  if (s.points.length === 0) return '';
   const top = s.points;
-  const bottom = index > 0 ? all[index - 1]?.points : undefined;
+  const firstPt = top[0];
+  const lastPt = top[top.length - 1];
+  if (firstPt === undefined || lastPt === undefined) return '';
+  const bottom = index > 0 ? ensureDefined(all[index - 1]).points : undefined;
   let d = '';
-  for (let i = 0; i < top.length; i++) {
-    const pt = top[i];
-    if (pt === undefined) continue;
+  for (const [i, pt] of top.entries()) {
     d += (i === 0 ? 'M' : 'L') + xToPx(pt.x) + ',' + yToPx(pt.y) + ' ';
   }
   if (bottom !== undefined) {
     for (let i = bottom.length - 1; i >= 0; i--) {
-      const pt = bottom[i];
-      if (pt === undefined) continue;
+      // i is bounded by [0, bottom.length).
+      const pt = bottom[i]!;
       d += 'L' + xToPx(pt.x) + ',' + yToPx(pt.y) + ' ';
     }
   } else {
-    const lastPt = top[top.length - 1];
-    const firstPt = top[0];
-    if (lastPt !== undefined && firstPt !== undefined) {
-      d += 'L' + xToPx(lastPt.x) + ',' + baselinePx + ' ';
-      d += 'L' + xToPx(firstPt.x) + ',' + baselinePx + ' ';
-    }
+    d += 'L' + xToPx(lastPt.x) + ',' + baselinePx + ' ';
+    d += 'L' + xToPx(firstPt.x) + ',' + baselinePx + ' ';
   }
   d += 'Z';
   return d;

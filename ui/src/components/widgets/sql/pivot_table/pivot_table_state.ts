@@ -22,7 +22,7 @@ import {type SqlColumn, sqlColumnId, SqlExpression} from '../table/sql_column';
 import type {TableColumn} from '../table/table_column';
 import type {SqlTableDescription} from '../table/table_description';
 import {moveArrayItem} from '../../../../base/array_utils';
-import {ensureExists} from '../../../../base/assert';
+import {ensureExists, ensureDefined} from '../../../../base/assert';
 import type {SortDirection} from '../../../../base/comparison_utils';
 import {type Aggregation, expandAggregations} from './aggregations';
 import {PivotTreeNode} from './pivot_tree_node';
@@ -137,16 +137,14 @@ export class PivotTableState {
   }
 
   public removePivot(index: number) {
-    const pivot = this.pivots[index];
-    if (pivot === undefined) return;
+    const pivot = ensureDefined(this.pivots[index]);
     this.sortByPivot(pivot, undefined);
     this.pivots.splice(index, 1);
     this.reload();
   }
 
   public removeAggregation(index: number) {
-    const agg = this.aggregations[index];
-    if (agg === undefined) return;
+    const agg = ensureDefined(this.aggregations[index]);
     this.sortByAggregation(agg, undefined);
     this.aggregations.splice(index, 1);
     this.reload();

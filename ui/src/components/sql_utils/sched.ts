@@ -138,16 +138,17 @@ export async function getSchedWakeupInfo(
       `(irq_context is null or irq_context = 0)`,
     ],
   });
-  if (prevRunnable.length === 0 || prevRunnable[0].wakerId === undefined) {
+  const first = prevRunnable[0];
+  if (first === undefined || first.wakerId === undefined) {
     return undefined;
   }
-  const waker = await getThreadState(engine, prevRunnable[0].wakerId);
+  const waker = await getThreadState(engine, first.wakerId);
   if (waker === undefined) {
     return undefined;
   }
   return {
     wakerCpu: waker?.cpu,
-    wakerUtid: prevRunnable[0].wakerUtid,
-    wakeupTs: prevRunnable[0].ts,
+    wakerUtid: first.wakerUtid,
+    wakeupTs: first.ts,
   };
 }
