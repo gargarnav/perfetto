@@ -464,8 +464,7 @@ export class Flamegraph implements m.ClassComponent<FlamegraphAttrs> {
       .getPropertyValue('--pf-color-accent')
       .trim();
 
-    for (let i = 0; i < this.renderNodes.length; i++) {
-      const node = this.renderNodes[i];
+    for (const node of this.renderNodes) {
       const {x, y, width: width, source, state} = node;
       if (y + NODE_HEIGHT <= yStart || y >= yEnd) {
         continue;
@@ -1149,8 +1148,8 @@ function computeRenderNodes(
   });
 
   const zoomQueryWidth = zoomRegion.queryXEnd - zoomRegion.queryXStart;
-  for (let i = 0; i < nodes.length; i++) {
-    const {id, parentId, depth, xStart: qXStart, xEnd: qXEnd} = nodes[i];
+  for (const [i, node] of nodes.entries()) {
+    const {id, parentId, depth, xStart: qXStart, xEnd: qXEnd} = node;
     assertTrue(depth !== 0);
 
     const depthMatchingZoom = isDepthMatchingZoom(depth, zoomRegion);

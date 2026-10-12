@@ -153,8 +153,8 @@ export interface TreeExplorerAddableMetric {
   readonly name: string;
 }
 
-export function metricId(metric: TreeExplorerMetric): string {
-  return metric.id ?? metric.name;
+export function metricId(metric?: TreeExplorerMetric): string {
+  return metric ? (metric.id ?? metric.name) : '';
 }
 
 export type FilterType =
@@ -338,7 +338,7 @@ export function splitFilters(text: string): string[] {
       let pos = 0;
       while ((pos = lowerText.indexOf(searchStr, pos)) !== -1) {
         // Only split if at start or preceded by whitespace
-        if (pos === 0 || /\s/.test(text[pos - 1])) {
+        if (pos === 0 || /\s/.test(text.charAt(pos - 1))) {
           splitPositions.push(pos);
         }
         pos += searchStr.length;
@@ -356,8 +356,7 @@ export function splitFilters(text: string): string[] {
 
   // Split text at those positions
   const result: string[] = [];
-  for (let i = 0; i < splitPositions.length; i++) {
-    const start = splitPositions[i];
+  for (const [i, start] of splitPositions.entries()) {
     const end = splitPositions[i + 1] ?? text.length;
     const part = text.substring(start, end).trim();
     if (part) {

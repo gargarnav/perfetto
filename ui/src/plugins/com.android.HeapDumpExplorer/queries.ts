@@ -830,12 +830,12 @@ export async function fetchShortestPaths(
 
   for (const [targetId, chain] of pathChains) {
     const path: PathEntry[] = [];
-    for (let i = 0; i < chain.length; i++) {
-      const row = nodeMap.get(chain[i]);
+    for (const [i, id] of chain.entries()) {
+      const row = nodeMap.get(id);
       if (!row) continue;
       const field =
         i < chain.length - 1
-          ? (fieldMap.get(`${chain[i]}:${chain[i + 1]}`) ?? '')
+          ? (fieldMap.get(`${id}:${chain[i + 1]}`) ?? '')
           : '';
       path.push({row, field, isDominator: false});
     }
@@ -971,12 +971,12 @@ export async function fetchDominatorPaths(
 
   for (const [targetId, chain] of pathChains) {
     const path: PathEntry[] = [];
-    for (let i = 0; i < chain.length; i++) {
-      const row = nodeMap.get(chain[i]);
+    for (const [i, id] of chain.entries()) {
+      const row = nodeMap.get(id);
       if (!row) continue;
       const field =
         i < chain.length - 1
-          ? (fieldMap.get(`${chain[i]}:${chain[i + 1]}`) ?? '')
+          ? (fieldMap.get(`${id}:${chain[i + 1]}`) ?? '')
           : '';
       path.push({row, field, isDominator: true});
     }
@@ -1116,7 +1116,8 @@ export async function getInstance(
           OR c.deobfuscated_name = '${classObjName}')
     `);
     const rows = collectRows(cRes);
-    if (rows.length > 0) classObjRow = rows[0];
+    const firstRow = rows[0];
+    if (firstRow !== undefined) classObjRow = firstRow;
   }
 
   const instanceFields =

@@ -115,7 +115,7 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(1);
-    const deserializedNode = deserializedState.rootNodes[0];
+    const deserializedNode = deserializedState.rootNodes[0]!;
     expect(deserializedNode).toBeInstanceOf(SlicesSourceNode);
   });
 
@@ -150,7 +150,7 @@ describe('JSON serialization/deserialization', () => {
     // Verify that the serialized JSON doesn't contain the trace object
     expect(json).toBeDefined();
     const parsed = JSON.parse(json!);
-    expect(parsed.nodes[0].state.trace).toBeUndefined();
+    expect(parsed.nodes[0]!.state.trace).toBeUndefined();
   });
 
   test('handles multiple nodes and connections', () => {
@@ -175,9 +175,9 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(1);
-    const deserializedTableNode = deserializedState.rootNodes[0];
+    const deserializedTableNode = deserializedState.rootNodes[0]!;
     expect(deserializedTableNode.nextNodes.length).toBe(1);
-    const deserializedModifyNode = deserializedTableNode.nextNodes[0];
+    const deserializedModifyNode = deserializedTableNode.nextNodes[0]!;
     expect(
       (deserializedModifyNode as ModifyColumnsNode).primaryInput?.nodeId,
     ).toBe(deserializedTableNode.nodeId);
@@ -201,14 +201,14 @@ describe('JSON serialization/deserialization', () => {
           {
             name: 'name',
             checked: true,
-            type: sliceTable.columns[0].type,
+            type: sliceTable.columns[0]!.type,
           },
         ],
         aggregations: [
           {
             column: {
               name: 'dur',
-              type: sliceTable.columns[2].type,
+              type: sliceTable.columns[2]!.type,
             },
             aggregationOp: 'SUM',
             newColumnName: 'total_dur',
@@ -230,20 +230,20 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(1);
-    const deserializedTableNode = deserializedState.rootNodes[0];
+    const deserializedTableNode = deserializedState.rootNodes[0]!;
     expect(deserializedTableNode.nextNodes.length).toBe(1);
     const deserializedAggregationNode = deserializedTableNode
-      .nextNodes[0] as AggregationNode;
+      .nextNodes[0]! as AggregationNode;
     expect(deserializedAggregationNode.primaryInput?.nodeId).toBe(
       deserializedTableNode.nodeId,
     );
-    expect(deserializedAggregationNode.attrs.groupByColumns[0].name).toBe(
+    expect(deserializedAggregationNode.attrs.groupByColumns[0]!.name).toBe(
       'name',
     );
     expect(
-      deserializedAggregationNode.attrs.aggregations[0].aggregationOp,
+      deserializedAggregationNode.attrs.aggregations[0]!.aggregationOp,
     ).toBe('SUM');
-    expect(deserializedAggregationNode.attrs.aggregations[0].column?.name).toBe(
+    expect(deserializedAggregationNode.attrs.aggregations[0]!.column?.name).toBe(
       'dur',
     );
   });
@@ -261,7 +261,7 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(1);
-    const deserializedNode = deserializedState.rootNodes[0] as SqlSourceNode;
+    const deserializedNode = deserializedState.rootNodes[0]! as SqlSourceNode;
     expect(deserializedNode.attrs.sql).toBe('SELECT * FROM slice');
   });
 
@@ -300,9 +300,9 @@ describe('JSON serialization/deserialization', () => {
     expect(deserializedState.rootNodes.length).toBe(2);
 
     // Find the sql node in the deserialized graph
-    const deserializedTableNode1 = deserializedState.rootNodes[0];
+    const deserializedTableNode1 = deserializedState.rootNodes[0]!;
     const deserializedSqlNode = deserializedTableNode1
-      .nextNodes[0] as SqlSourceNode;
+      .nextNodes[0]! as SqlSourceNode;
 
     expect(deserializedSqlNode.attrs.sql).toBe(
       'SELECT * FROM $input_0 JOIN $input_1',
@@ -312,10 +312,10 @@ describe('JSON serialization/deserialization', () => {
     // rootNodeIds are serialized in order and restored in the same order.
     // tableNode1 (slice) was connected to port 0, tableNode2 (thread) to port 1.
     expect(deserializedSqlNode.secondaryInputs.connections.get(0)?.nodeId).toBe(
-      deserializedState.rootNodes[0].nodeId,
+      deserializedState.rootNodes[0]!.nodeId,
     );
     expect(deserializedSqlNode.secondaryInputs.connections.get(1)?.nodeId).toBe(
-      deserializedState.rootNodes[1].nodeId,
+      deserializedState.rootNodes[1]!.nodeId,
     );
   });
 
@@ -350,11 +350,11 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(2);
-    const deserializedTableNode1 = deserializedState.rootNodes[0];
-    const deserializedTableNode2 = deserializedState.rootNodes[1];
+    const deserializedTableNode1 = deserializedState.rootNodes[0]!;
+    const deserializedTableNode2 = deserializedState.rootNodes[1]!;
     expect(deserializedTableNode1.nextNodes.length).toBe(1);
     const deserializedIntervalIntersectNode = deserializedTableNode1
-      .nextNodes[0] as IntervalIntersectNode;
+      .nextNodes[0]! as IntervalIntersectNode;
     expect(
       deserializedIntervalIntersectNode.secondaryInputs.connections,
     ).toBeDefined();
@@ -409,12 +409,12 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(3);
-    const deserializedTableNode1 = deserializedState.rootNodes[0];
-    const deserializedTableNode2 = deserializedState.rootNodes[1];
-    const deserializedTableNode3 = deserializedState.rootNodes[2];
+    const deserializedTableNode1 = deserializedState.rootNodes[0]!;
+    const deserializedTableNode2 = deserializedState.rootNodes[1]!;
+    const deserializedTableNode3 = deserializedState.rootNodes[2]!;
     expect(deserializedTableNode1.nextNodes.length).toBe(1);
     const deserializedIntervalIntersectNode = deserializedTableNode1
-      .nextNodes[0] as IntervalIntersectNode;
+      .nextNodes[0]! as IntervalIntersectNode;
 
     // Verify secondaryInputs connections
     expect(
@@ -447,7 +447,7 @@ describe('JSON serialization/deserialization', () => {
     ).toBe(1);
     expect(
       (deserializedIntervalIntersectNode as IntervalIntersectNode).attrs
-        .partitionColumns?.[0],
+        .partitionColumns?.[0]!,
     ).toBe('name');
   });
 
@@ -471,10 +471,10 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(1);
-    const deserializedTableNode = deserializedState.rootNodes[0];
+    const deserializedTableNode = deserializedState.rootNodes[0]!;
     expect(deserializedTableNode.nextNodes.length).toBe(1);
     const deserializedModifyNode = deserializedTableNode
-      .nextNodes[0] as ModifyColumnsNode;
+      .nextNodes[0]! as ModifyColumnsNode;
     expect(deserializedModifyNode.primaryInput?.nodeId).toBe(
       deserializedTableNode.nodeId,
     );
@@ -511,12 +511,12 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(1);
-    const deserializedTableNode = deserializedState.rootNodes[0];
+    const deserializedTableNode = deserializedState.rootNodes[0]!;
     expect(deserializedTableNode.nextNodes.length).toBe(1);
     const deserializedFilterNode = deserializedTableNode
-      .nextNodes[0] as FilterNode;
+      .nextNodes[0]! as FilterNode;
     expect(deserializedFilterNode.attrs.filters?.length).toBe(1);
-    const filter = deserializedFilterNode.attrs.filters?.[0];
+    const filter = deserializedFilterNode.attrs.filters?.[0]!;
     expect(filter?.column).toBe('name');
     expect(filter?.op).toBe('=');
     if (filter !== undefined && 'value' in filter) {
@@ -557,12 +557,12 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(1);
-    const deserializedTableNode = deserializedState.rootNodes[0];
+    const deserializedTableNode = deserializedState.rootNodes[0]!;
     expect(deserializedTableNode.nextNodes.length).toBe(1);
     const deserializedFilterNode = deserializedTableNode
-      .nextNodes[0] as FilterNode;
+      .nextNodes[0]! as FilterNode;
     expect(deserializedFilterNode.attrs.filters?.length).toBe(1);
-    const filter = deserializedFilterNode.attrs.filters?.[0];
+    const filter = deserializedFilterNode.attrs.filters?.[0]!;
     expect(filter?.column).toBe('dur');
     expect(filter?.op).toBe('>');
     if (filter !== undefined && 'value' in filter) {
@@ -596,8 +596,8 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(2);
-    const deserializedTableNode = deserializedState.rootNodes[0];
-    const deserializedSliceNode = deserializedState.rootNodes[1];
+    const deserializedTableNode = deserializedState.rootNodes[0]!;
+    const deserializedSliceNode = deserializedState.rootNodes[1]!;
 
     // Coordinates are normalized so top-left is at (minX, minY)
     // Original: tableNode (10, 20), sliceNode (100, 200)
@@ -641,12 +641,12 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(1);
-    const deserializedTableNode = deserializedState.rootNodes[0];
+    const deserializedTableNode = deserializedState.rootNodes[0]!;
     expect(deserializedTableNode.nextNodes.length).toBe(1);
     const deserializedFilterNode = deserializedTableNode
-      .nextNodes[0] as FilterNode;
+      .nextNodes[0]! as FilterNode;
     expect(deserializedFilterNode.attrs.filters?.length).toBe(1);
-    const filter = deserializedFilterNode.attrs.filters?.[0];
+    const filter = deserializedFilterNode.attrs.filters?.[0]!;
     expect(filter?.column).toBe('id');
     expect(filter?.op).toBe('=');
     if (filter !== undefined && 'value' in filter) {
@@ -702,9 +702,9 @@ describe('JSON serialization/deserialization', () => {
       sqlModules,
     );
     const deserializedTableNode1 =
-      deserializedStateWithPrimaryInput.rootNodes[0];
+      deserializedStateWithPrimaryInput.rootNodes[0]!;
     const deserializedModifyNode1 = deserializedTableNode1
-      .nextNodes[0] as ModifyColumnsNode;
+      .nextNodes[0]! as ModifyColumnsNode;
     expect(deserializedModifyNode1.primaryInput?.nodeId).toBe(
       deserializedTableNode1.nodeId,
     );
@@ -744,16 +744,16 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(1);
-    const deserializedTableNode = deserializedState.rootNodes[0];
+    const deserializedTableNode = deserializedState.rootNodes[0]!;
     expect(deserializedTableNode.nextNodes.length).toBe(1);
     const deserializedModifyNode = deserializedTableNode
-      .nextNodes[0] as ModifyColumnsNode;
+      .nextNodes[0]! as ModifyColumnsNode;
     expect(deserializedModifyNode.nextNodes.length).toBe(1);
     const deserializedFilterNode = deserializedModifyNode
-      .nextNodes[0] as FilterNode;
+      .nextNodes[0]! as FilterNode;
     expect(deserializedFilterNode.attrs.filters).toBeDefined();
     expect(deserializedFilterNode.attrs.filters?.length).toBe(1);
-    expect(deserializedFilterNode.attrs.filters?.[0].column).toBe('new_col');
+    expect(deserializedFilterNode.attrs.filters?.[0]!.column).toBe('new_col');
   });
 
   test('serializes and deserializes add columns node', () => {
@@ -784,10 +784,10 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(1);
-    const deserializedTableNode = deserializedState.rootNodes[0];
+    const deserializedTableNode = deserializedState.rootNodes[0]!;
     expect(deserializedTableNode.nextNodes.length).toBe(1);
     const deserializedNode = deserializedTableNode
-      .nextNodes[0] as AddColumnsNode;
+      .nextNodes[0]! as AddColumnsNode;
     expect(deserializedNode.attrs.selectedColumns).toEqual(['name']);
     // Note: sqlTable is no longer part of AddColumnsNodeState
   });
@@ -812,7 +812,7 @@ describe('JSON serialization/deserialization', () => {
     tableNode1.nextNodes.push(addColumnsNode);
     addColumnsNode.primaryInput = tableNode1;
 
-    // Create the side input: tableNode2 connected to inputNodes[0]
+    // Create the side input: tableNode2 connected to inputNodes[0]!
     const tableNode2 = new TableSourceNode(
       {sqlTable: 'slice'},
       {trace, sqlModules},
@@ -838,13 +838,13 @@ describe('JSON serialization/deserialization', () => {
 
     // Verify root nodes
     expect(deserializedState.rootNodes.length).toBe(2);
-    const deserializedTableNode1 = deserializedState.rootNodes[0];
-    const deserializedTableNode2 = deserializedState.rootNodes[1];
+    const deserializedTableNode1 = deserializedState.rootNodes[0]!;
+    const deserializedTableNode2 = deserializedState.rootNodes[1]!;
 
     // Verify main connection (primaryInput)
     expect(deserializedTableNode1.nextNodes.length).toBe(1);
     const deserializedAddColumnsNode = deserializedTableNode1
-      .nextNodes[0] as AddColumnsNode;
+      .nextNodes[0]! as AddColumnsNode;
     expect(deserializedAddColumnsNode.primaryInput?.nodeId).toBe(
       deserializedTableNode1.nodeId,
     );
@@ -862,7 +862,7 @@ describe('JSON serialization/deserialization', () => {
 
     // Verify tableNode2 has the connection back to addColumnsNode
     expect(deserializedTableNode2.nextNodes.length).toBe(1);
-    expect(deserializedTableNode2.nextNodes[0].nodeId).toBe(
+    expect(deserializedTableNode2.nextNodes[0]!.nodeId).toBe(
       deserializedAddColumnsNode.nodeId,
     );
 
@@ -899,12 +899,12 @@ describe('JSON serialization/deserialization', () => {
     // Get all columns from the table to find one to rename
     const allColumns = tableNode1.finalCols;
     // Find a column to rename (let's use the first one)
-    const columnToRename = allColumns[0];
+    const columnToRename = allColumns[0]!;
 
     // Create modify columns node that renames a column using alias
     const selectedColumnsWithAlias = [
       {
-        ...allColumns[0],
+        ...allColumns[0]!,
         alias: 'renamed_column',
         checked: true,
       },
@@ -970,7 +970,7 @@ describe('JSON serialization/deserialization', () => {
     expect(deserializedTableNode2!.nextNodes.length).toBe(1);
 
     const deserializedAddColumnsNode = deserializedTableNode2!
-      .nextNodes[0] as AddColumnsNode;
+      .nextNodes[0]! as AddColumnsNode;
 
     // Verify the connection is restored
     expect(
@@ -1044,10 +1044,10 @@ describe('JSON serialization/deserialization', () => {
 
     // Verify the aggregation node sees the aliased column
     expect(aggregationNode.attrs.groupByColumns.length).toBe(1);
-    expect(aggregationNode.attrs.groupByColumns[0].name).toBe(
+    expect(aggregationNode.attrs.groupByColumns[0]!.name).toBe(
       'timestamp_alias',
     );
-    expect(aggregationNode.attrs.groupByColumns[0].name).toBe(
+    expect(aggregationNode.attrs.groupByColumns[0]!.name).toBe(
       'timestamp_alias',
     );
 
@@ -1064,10 +1064,10 @@ describe('JSON serialization/deserialization', () => {
 
     // Navigate to the deserialized aggregation node
     expect(deserializedState.rootNodes.length).toBe(1);
-    const deserializedTableNode = deserializedState.rootNodes[0];
+    const deserializedTableNode = deserializedState.rootNodes[0]!;
     expect(deserializedTableNode.nextNodes.length).toBe(1);
 
-    const deserializedModifyNode = deserializedTableNode.nextNodes[0] as
+    const deserializedModifyNode = deserializedTableNode.nextNodes[0]! as
       ModifyColumnsNode | undefined;
     expect(deserializedModifyNode).toBeDefined();
     expect(deserializedModifyNode?.type).toBe(NodeType.kModifyColumns);
@@ -1085,15 +1085,15 @@ describe('JSON serialization/deserialization', () => {
 
     // Verify the aggregation node still sees the aliased column
     expect(deserializedModifyNode?.nextNodes.length).toBe(1);
-    const deserializedAggNode = deserializedModifyNode?.nextNodes[0] as
+    const deserializedAggNode = deserializedModifyNode?.nextNodes[0]! as
       AggregationNode | undefined;
     expect(deserializedAggNode).toBeDefined();
     expect(deserializedAggNode?.type).toBe(NodeType.kAggregation);
     expect(deserializedAggNode?.attrs.groupByColumns.length).toBe(1);
-    expect(deserializedAggNode?.attrs.groupByColumns[0].name).toBe(
+    expect(deserializedAggNode?.attrs.groupByColumns[0]!.name).toBe(
       'timestamp_alias',
     );
-    expect(deserializedAggNode?.attrs.groupByColumns[0].name).toBe(
+    expect(deserializedAggNode?.attrs.groupByColumns[0]!.name).toBe(
       'timestamp_alias',
     );
   });
@@ -1124,10 +1124,10 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(1);
-    const deserializedTableNode = deserializedState.rootNodes[0];
+    const deserializedTableNode = deserializedState.rootNodes[0]!;
     expect(deserializedTableNode.nextNodes.length).toBe(1);
     const deserializedNode = deserializedTableNode
-      .nextNodes[0] as LimitAndOffsetNode;
+      .nextNodes[0]! as LimitAndOffsetNode;
     expect(deserializedNode.attrs.limit).toEqual(100);
     expect(deserializedNode.attrs.offset).toEqual(20);
   });
@@ -1160,9 +1160,9 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(1);
-    const deserializedTableNode = deserializedState.rootNodes[0];
+    const deserializedTableNode = deserializedState.rootNodes[0]!;
     expect(deserializedTableNode.nextNodes.length).toBe(1);
-    const deserializedNode = deserializedTableNode.nextNodes[0] as SortNode;
+    const deserializedNode = deserializedTableNode.nextNodes[0]! as SortNode;
     expect(deserializedNode.attrs.sortCriteria).toEqual([
       {colName: 'name', direction: 'ASC'},
       {colName: 'ts', direction: 'DESC'},
@@ -1206,28 +1206,28 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(1);
-    const deserializedTableNode = deserializedState.rootNodes[0];
+    const deserializedTableNode = deserializedState.rootNodes[0]!;
     expect(deserializedTableNode.nextNodes.length).toBe(1);
-    const deserializedNode = deserializedTableNode.nextNodes[0] as FilterNode;
+    const deserializedNode = deserializedTableNode.nextNodes[0]! as FilterNode;
 
     // Verify filters
     expect(deserializedNode.attrs.filters).toBeDefined();
     expect(deserializedNode.attrs.filters?.length).toBe(2);
-    expect(deserializedNode.attrs.filters?.[0].column).toBe('name');
-    expect(deserializedNode.attrs.filters?.[0].op).toBe('=');
+    expect(deserializedNode.attrs.filters?.[0]!.column).toBe('name');
+    expect(deserializedNode.attrs.filters?.[0]!.op).toBe('=');
     if (
-      deserializedNode.attrs.filters?.[0] &&
-      'value' in deserializedNode.attrs.filters[0]
+      deserializedNode.attrs.filters?.[0]! &&
+      'value' in deserializedNode.attrs.filters[0]!
     ) {
-      expect(deserializedNode.attrs.filters[0].value).toBe('test');
+      expect(deserializedNode.attrs.filters[0]!.value).toBe('test');
     }
-    expect(deserializedNode.attrs.filters?.[1].column).toBe('dur');
-    expect(deserializedNode.attrs.filters?.[1].op).toBe('>');
+    expect(deserializedNode.attrs.filters?.[1]!.column).toBe('dur');
+    expect(deserializedNode.attrs.filters?.[1]!.op).toBe('>');
     if (
-      deserializedNode.attrs.filters?.[1] &&
-      'value' in deserializedNode.attrs.filters[1]
+      deserializedNode.attrs.filters?.[1]! &&
+      'value' in deserializedNode.attrs.filters[1]!
     ) {
-      expect(deserializedNode.attrs.filters[1].value).toBe(1000);
+      expect(deserializedNode.attrs.filters[1]!.value).toBe(1000);
     }
 
     // Verify filter operator
@@ -1269,17 +1269,17 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(1);
-    const deserializedTableNode = deserializedState.rootNodes[0];
+    const deserializedTableNode = deserializedState.rootNodes[0]!;
     expect(deserializedTableNode.nextNodes.length).toBe(1);
-    const deserializedNode = deserializedTableNode.nextNodes[0] as FilterNode;
+    const deserializedNode = deserializedTableNode.nextNodes[0]! as FilterNode;
 
     // Verify filter
     expect(deserializedNode.attrs.filters).toBeDefined();
     expect(deserializedNode.attrs.filters?.length).toBe(1);
-    expect(deserializedNode.attrs.filters?.[0].column).toBe('name');
-    expect(deserializedNode.attrs.filters?.[0].op).toBe('is null');
+    expect(deserializedNode.attrs.filters?.[0]!.column).toBe('name');
+    expect(deserializedNode.attrs.filters?.[0]!.op).toBe('is null');
     // Null filters don't have a value property
-    expect('value' in deserializedNode.attrs.filters![0]).toBe(false);
+    expect('value' in deserializedNode.attrs.filters![0]!).toBe(false);
   });
 
   test('serializes and deserializes merge node with equality condition', () => {
@@ -1324,11 +1324,11 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(2);
-    const deserializedTableNode1 = deserializedState.rootNodes[0];
-    const deserializedTableNode2 = deserializedState.rootNodes[1];
+    const deserializedTableNode1 = deserializedState.rootNodes[0]!;
+    const deserializedTableNode2 = deserializedState.rootNodes[1]!;
     expect(deserializedTableNode1.nextNodes.length).toBe(1);
     const deserializedJoinNode = deserializedTableNode1
-      .nextNodes[0] as JoinNode;
+      .nextNodes[0]! as JoinNode;
     expect(deserializedJoinNode.secondaryInputs.connections).toBeDefined();
     expect(deserializedJoinNode.secondaryInputs.connections.size).toBe(2);
     expect(
@@ -1386,10 +1386,10 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(2);
-    const deserializedTableNode1 = deserializedState.rootNodes[0];
+    const deserializedTableNode1 = deserializedState.rootNodes[0]!;
     expect(deserializedTableNode1.nextNodes.length).toBe(1);
     const deserializedJoinNode = deserializedTableNode1
-      .nextNodes[0] as JoinNode;
+      .nextNodes[0]! as JoinNode;
     expect(deserializedJoinNode.attrs.leftQueryAlias).toBe('t1');
     expect(deserializedJoinNode.attrs.rightQueryAlias).toBe('t2');
     expect(deserializedJoinNode.attrs.conditionType).toBe('freeform');
@@ -1446,14 +1446,14 @@ describe('JSON serialization/deserialization', () => {
     expect(deserializedState.rootNodes.length).toBe(2);
 
     // Find the join node
-    const table1 = deserializedState.rootNodes[0];
-    const table2 = deserializedState.rootNodes[1];
+    const table1 = deserializedState.rootNodes[0]!;
+    const table2 = deserializedState.rootNodes[1]!;
     expect(table1.nextNodes.length).toBe(1);
     expect(table2.nextNodes.length).toBe(1);
-    expect(table1.nextNodes[0]).toBe(table2.nextNodes[0]); // Same join node
+    expect(table1.nextNodes[0]!).toBe(table2.nextNodes[0]!); // Same join node
 
     // Verify it's actually a JoinNode (not just any node)
-    const joinNode = table1.nextNodes[0] as JoinNode;
+    const joinNode = table1.nextNodes[0]! as JoinNode;
     expect(joinNode).toBeInstanceOf(JoinNode);
     expect(joinNode.type).toBe(NodeType.kJoin); // kMerge should equal kJoin
 
@@ -1516,12 +1516,12 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(3);
-    const deserializedTableNode1 = deserializedState.rootNodes[0];
-    const deserializedTableNode2 = deserializedState.rootNodes[1];
-    const deserializedTableNode3 = deserializedState.rootNodes[2];
+    const deserializedTableNode1 = deserializedState.rootNodes[0]!;
+    const deserializedTableNode2 = deserializedState.rootNodes[1]!;
+    const deserializedTableNode3 = deserializedState.rootNodes[2]!;
     expect(deserializedTableNode1.nextNodes.length).toBe(1);
     const deserializedUnionNode = deserializedTableNode1
-      .nextNodes[0] as UnionNode;
+      .nextNodes[0]! as UnionNode;
     expect(deserializedUnionNode.secondaryInputs.connections).toBeDefined();
     expect(deserializedUnionNode.secondaryInputs.connections.size).toBe(3);
     expect(
@@ -1537,16 +1537,16 @@ describe('JSON serialization/deserialization', () => {
       (deserializedUnionNode as UnionNode).attrs.selectedColumns.length,
     ).toBe(2);
     expect(
-      (deserializedUnionNode as UnionNode).attrs.selectedColumns[0].name,
+      (deserializedUnionNode as UnionNode).attrs.selectedColumns[0]!.name,
     ).toBe('name');
     expect(
-      (deserializedUnionNode as UnionNode).attrs.selectedColumns[0].checked,
+      (deserializedUnionNode as UnionNode).attrs.selectedColumns[0]!.checked,
     ).toBe(true);
     expect(
-      (deserializedUnionNode as UnionNode).attrs.selectedColumns[1].name,
+      (deserializedUnionNode as UnionNode).attrs.selectedColumns[1]!.name,
     ).toBe('ts');
     expect(
-      (deserializedUnionNode as UnionNode).attrs.selectedColumns[1].checked,
+      (deserializedUnionNode as UnionNode).attrs.selectedColumns[1]!.checked,
     ).toBe(true);
   });
 
@@ -1606,17 +1606,17 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(2);
-    const deserializedTableNode1 = deserializedState.rootNodes[0];
+    const deserializedTableNode1 = deserializedState.rootNodes[0]!;
     expect(deserializedTableNode1.nextNodes.length).toBe(1);
     const deserializedJoinNode = deserializedTableNode1
-      .nextNodes[0] as JoinNode;
+      .nextNodes[0]! as JoinNode;
     expect(deserializedJoinNode.nextNodes.length).toBe(1);
     const deserializedFilterNode = deserializedJoinNode
-      .nextNodes[0] as FilterNode;
+      .nextNodes[0]! as FilterNode;
     expect(deserializedFilterNode.attrs.filters).toBeDefined();
     expect(deserializedFilterNode.attrs.filters?.length).toBe(1);
-    expect(deserializedFilterNode.attrs.filters?.[0].column).toBe('dur');
-    expect(deserializedFilterNode.attrs.filters?.[0].op).toBe('>');
+    expect(deserializedFilterNode.attrs.filters?.[0]!.column).toBe('dur');
+    expect(deserializedFilterNode.attrs.filters?.[0]!.op).toBe('>');
   });
 
   test('serializes and deserializes union node', () => {
@@ -1659,13 +1659,13 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(2);
-    const deserializedTableNode1 = deserializedState.rootNodes[0];
+    const deserializedTableNode1 = deserializedState.rootNodes[0]!;
     expect(deserializedTableNode1.nextNodes.length).toBe(1);
     const deserializedUnionNode = deserializedTableNode1
-      .nextNodes[0] as UnionNode;
+      .nextNodes[0]! as UnionNode;
     // Verify unchecked column is preserved
     expect(
-      (deserializedUnionNode as UnionNode).attrs.selectedColumns[1].checked,
+      (deserializedUnionNode as UnionNode).attrs.selectedColumns[1]!.checked,
     ).toBe(false);
   });
 
@@ -1749,12 +1749,12 @@ describe('JSON serialization/deserialization', () => {
           {
             name: 'name',
             checked: true,
-            type: sliceTable.columns[0].type,
+            type: sliceTable.columns[0]!.type,
           },
           {
             name: 'ts',
             checked: true,
-            type: sliceTable.columns[1].type,
+            type: sliceTable.columns[1]!.type,
           },
         ],
       },
@@ -1776,13 +1776,13 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(1);
-    const deserializedTableNode = deserializedState.rootNodes[0];
+    const deserializedTableNode = deserializedState.rootNodes[0]!;
     expect(deserializedTableNode.nextNodes.length).toBe(1);
     const deserializedNode = deserializedTableNode
-      .nextNodes[0] as ModifyColumnsNode;
+      .nextNodes[0]! as ModifyColumnsNode;
     expect(deserializedNode.attrs.selectedColumns.length).toBe(2);
-    expect(deserializedNode.attrs.selectedColumns[0].name).toBe('name');
-    expect(deserializedNode.attrs.selectedColumns[1].name).toBe('ts');
+    expect(deserializedNode.attrs.selectedColumns[0]!.name).toBe('name');
+    expect(deserializedNode.attrs.selectedColumns[1]!.name).toBe('ts');
   });
 
   test('serializes modify columns node without primaryInput', () => {
@@ -1820,19 +1820,19 @@ describe('JSON serialization/deserialization', () => {
           {
             name: 'name',
             checked: true,
-            type: sliceTable.columns[0].type,
+            type: sliceTable.columns[0]!.type,
           },
           {
             name: 'ts',
             checked: true,
-            type: sliceTable.columns[1].type,
+            type: sliceTable.columns[1]!.type,
           },
         ],
         aggregations: [
           {
             column: {
               name: 'dur',
-              type: sliceTable.columns[2].type,
+              type: sliceTable.columns[2]!.type,
             },
             aggregationOp: 'SUM',
             newColumnName: 'total_dur',
@@ -1840,7 +1840,7 @@ describe('JSON serialization/deserialization', () => {
           {
             column: {
               name: 'dur',
-              type: sliceTable.columns[2].type,
+              type: sliceTable.columns[2]!.type,
             },
             aggregationOp: 'AVG',
             newColumnName: 'avg_dur',
@@ -1848,7 +1848,7 @@ describe('JSON serialization/deserialization', () => {
           {
             column: {
               name: 'dur',
-              type: sliceTable.columns[2].type,
+              type: sliceTable.columns[2]!.type,
             },
             aggregationOp: 'COUNT',
             newColumnName: 'count',
@@ -1873,27 +1873,27 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(1);
-    const deserializedTableNode = deserializedState.rootNodes[0];
+    const deserializedTableNode = deserializedState.rootNodes[0]!;
     expect(deserializedTableNode.nextNodes.length).toBe(1);
     const deserializedAggregationNode = deserializedTableNode
-      .nextNodes[0] as AggregationNode;
+      .nextNodes[0]! as AggregationNode;
     expect(deserializedAggregationNode.attrs.groupByColumns.length).toBe(2);
-    expect(deserializedAggregationNode.attrs.groupByColumns[1].name).toBe('ts');
+    expect(deserializedAggregationNode.attrs.groupByColumns[1]!.name).toBe('ts');
     expect(deserializedAggregationNode.attrs.aggregations.length).toBe(3);
     expect(
-      deserializedAggregationNode.attrs.aggregations[0].aggregationOp,
+      deserializedAggregationNode.attrs.aggregations[0]!.aggregationOp,
     ).toBe('SUM');
     expect(
-      deserializedAggregationNode.attrs.aggregations[0].newColumnName,
+      deserializedAggregationNode.attrs.aggregations[0]!.newColumnName,
     ).toBe('total_dur');
     expect(
-      deserializedAggregationNode.attrs.aggregations[1].aggregationOp,
+      deserializedAggregationNode.attrs.aggregations[1]!.aggregationOp,
     ).toBe('AVG');
     expect(
-      deserializedAggregationNode.attrs.aggregations[1].newColumnName,
+      deserializedAggregationNode.attrs.aggregations[1]!.newColumnName,
     ).toBe('avg_dur');
     expect(
-      deserializedAggregationNode.attrs.aggregations[2].aggregationOp,
+      deserializedAggregationNode.attrs.aggregations[2]!.aggregationOp,
     ).toBe('COUNT');
   });
 
@@ -1923,7 +1923,7 @@ describe('JSON serialization/deserialization', () => {
           {
             name: 'name',
             checked: true,
-            type: sliceTable.columns[0].type,
+            type: sliceTable.columns[0]!.type,
           },
         ],
       },
@@ -1937,14 +1937,14 @@ describe('JSON serialization/deserialization', () => {
           {
             name: 'name',
             checked: true,
-            type: sliceTable.columns[0].type,
+            type: sliceTable.columns[0]!.type,
           },
         ],
         aggregations: [
           {
             column: {
               name: 'dur_ms',
-              type: sliceTable.columns[2].type,
+              type: sliceTable.columns[2]!.type,
             },
             aggregationOp: 'SUM',
             newColumnName: 'total_dur_ms',
@@ -1991,27 +1991,27 @@ describe('JSON serialization/deserialization', () => {
 
     // Verify chain structure
     expect(deserializedState.rootNodes.length).toBe(1);
-    const node1 = deserializedState.rootNodes[0] as TableSourceNode;
+    const node1 = deserializedState.rootNodes[0]! as TableSourceNode;
     expect(node1.nextNodes.length).toBe(1);
 
-    const node2 = node1.nextNodes[0] as FilterNode;
+    const node2 = node1.nextNodes[0]! as FilterNode;
     expect(node2.primaryInput?.nodeId).toBe(node1.nodeId);
     expect(node2.attrs.filters?.length).toBe(1);
     expect(node2.nextNodes.length).toBe(1);
 
-    const node3 = node2.nextNodes[0] as ModifyColumnsNode;
+    const node3 = node2.nextNodes[0]! as ModifyColumnsNode;
     expect(node3.primaryInput?.nodeId).toBe(node2.nodeId);
     expect(node3.nextNodes.length).toBe(1);
 
-    const node4 = node3.nextNodes[0] as AggregationNode;
+    const node4 = node3.nextNodes[0]! as AggregationNode;
     expect(node4.primaryInput?.nodeId).toBe(node3.nodeId);
     expect(node4.nextNodes.length).toBe(1);
 
-    const node5 = node4.nextNodes[0] as SortNode;
+    const node5 = node4.nextNodes[0]! as SortNode;
     expect(node5.primaryInput?.nodeId).toBe(node4.nodeId);
     expect(node5.nextNodes.length).toBe(1);
 
-    const node6 = node5.nextNodes[0] as LimitAndOffsetNode;
+    const node6 = node5.nextNodes[0]! as LimitAndOffsetNode;
     expect(node6.primaryInput?.nodeId).toBe(node5.nodeId);
     expect(node6.attrs.limit).toBe(10);
 
@@ -2031,7 +2031,7 @@ describe('JSON serialization/deserialization', () => {
           {
             name: 'name',
             checked: true,
-            type: sliceTable.columns[0].type,
+            type: sliceTable.columns[0]!.type,
           },
         ],
       },
@@ -2045,7 +2045,7 @@ describe('JSON serialization/deserialization', () => {
           {
             name: 'ts',
             checked: true,
-            type: sliceTable.columns[1].type,
+            type: sliceTable.columns[1]!.type,
           },
         ],
       },
@@ -2064,11 +2064,11 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     expect(deserializedState.rootNodes.length).toBe(1);
-    const deserializedTableNode = deserializedState.rootNodes[0];
+    const deserializedTableNode = deserializedState.rootNodes[0]!;
     expect(deserializedTableNode.nextNodes.length).toBe(2);
 
-    const branch1 = deserializedTableNode.nextNodes[0] as ModifyColumnsNode;
-    const branch2 = deserializedTableNode.nextNodes[1] as ModifyColumnsNode;
+    const branch1 = deserializedTableNode.nextNodes[0]! as ModifyColumnsNode;
+    const branch2 = deserializedTableNode.nextNodes[1]! as ModifyColumnsNode;
 
     expect(branch1.primaryInput?.nodeId).toBe(deserializedTableNode.nodeId);
     expect(branch2.primaryInput?.nodeId).toBe(deserializedTableNode.nodeId);
@@ -2098,7 +2098,7 @@ describe('JSON serialization/deserialization', () => {
 
     expect(deserializedState.rootNodes.length).toBe(1);
     expect(deserializedState.nodeLayouts.size).toBe(0);
-    const deserializedNode = deserializedState.rootNodes[0] as SlicesSourceNode;
+    const deserializedNode = deserializedState.rootNodes[0]! as SlicesSourceNode;
     expect(deserializedNode).toBeInstanceOf(SlicesSourceNode);
   });
 
@@ -2139,13 +2139,13 @@ describe('JSON serialization/deserialization', () => {
     expect(deserializedState.rootNodes.length).toBe(2);
 
     // Find the deserialized slices node (first root)
-    const deserializedSlicesNode = deserializedState.rootNodes[0];
+    const deserializedSlicesNode = deserializedState.rootNodes[0]!;
     expect(deserializedSlicesNode).toBeInstanceOf(SlicesSourceNode);
     expect(deserializedSlicesNode.nextNodes.length).toBe(1);
 
     // Find the deserialized filter during node
     const deserializedFilterDuringNode = deserializedSlicesNode
-      .nextNodes[0] as FilterDuringNode;
+      .nextNodes[0]! as FilterDuringNode;
     expect(deserializedFilterDuringNode).toBeInstanceOf(FilterDuringNode);
 
     // Verify primaryInput connection
@@ -2227,20 +2227,20 @@ describe('JSON serialization/deserialization', () => {
     expect(deserializedState.rootNodes.length).toBe(2);
 
     // Verify the diamond converges at union
-    const deserializedTableNode1 = deserializedState.rootNodes[0];
-    const deserializedTableNode2 = deserializedState.rootNodes[1];
+    const deserializedTableNode1 = deserializedState.rootNodes[0]!;
+    const deserializedTableNode2 = deserializedState.rootNodes[1]!;
 
     const deserializedFilterNode = deserializedTableNode1
-      .nextNodes[0] as FilterNode;
+      .nextNodes[0]! as FilterNode;
     const deserializedSortNode = deserializedTableNode2
-      .nextNodes[0] as SortNode;
+      .nextNodes[0]! as SortNode;
 
     expect(deserializedFilterNode.nextNodes.length).toBe(1);
     expect(deserializedSortNode.nextNodes.length).toBe(1);
 
     // Both should converge to the same union node
-    const deserializedUnionNode1 = deserializedFilterNode.nextNodes[0];
-    const deserializedUnionNode2 = deserializedSortNode.nextNodes[0];
+    const deserializedUnionNode1 = deserializedFilterNode.nextNodes[0]!;
+    const deserializedUnionNode2 = deserializedSortNode.nextNodes[0]!;
     expect(deserializedUnionNode1.nodeId).toBe(deserializedUnionNode2.nodeId);
   });
 
@@ -2280,14 +2280,14 @@ describe('JSON serialization/deserialization', () => {
           {
             name: 'name',
             checked: true,
-            type: sliceTable.columns[0].type,
+            type: sliceTable.columns[0]!.type,
           },
         ],
         aggregations: [
           {
             column: {
               name: 'dur',
-              type: sliceTable.columns[2].type,
+              type: sliceTable.columns[2]!.type,
             },
             aggregationOp: 'SUM',
             newColumnName: 'total_dur',
@@ -2314,26 +2314,26 @@ describe('JSON serialization/deserialization', () => {
     expect(deserializedState.rootNodes.length).toBe(1);
 
     // Walk the chain and verify all connections
-    let currentNode = deserializedState.rootNodes[0];
+    let currentNode = deserializedState.rootNodes[0]!;
     expect(currentNode).toBeInstanceOf(TableSourceNode);
 
-    currentNode = currentNode.nextNodes[0];
+    currentNode = currentNode.nextNodes[0]!;
     expect(currentNode).toBeInstanceOf(FilterNode);
     expect((currentNode as FilterNode).primaryInput).toBeDefined();
 
-    currentNode = currentNode.nextNodes[0];
+    currentNode = currentNode.nextNodes[0]!;
     expect(currentNode).toBeInstanceOf(FilterNode);
     expect((currentNode as FilterNode).primaryInput).toBeDefined();
 
-    currentNode = currentNode.nextNodes[0];
+    currentNode = currentNode.nextNodes[0]!;
     expect(currentNode).toBeInstanceOf(SortNode);
     expect((currentNode as SortNode).primaryInput).toBeDefined();
 
-    currentNode = currentNode.nextNodes[0];
+    currentNode = currentNode.nextNodes[0]!;
     expect(currentNode).toBeInstanceOf(AggregationNode);
     expect((currentNode as AggregationNode).primaryInput).toBeDefined();
 
-    currentNode = currentNode.nextNodes[0];
+    currentNode = currentNode.nextNodes[0]!;
     expect(currentNode).toBeInstanceOf(LimitAndOffsetNode);
     expect((currentNode as LimitAndOffsetNode).primaryInput).toBeDefined();
     expect(currentNode.nextNodes.length).toBe(0); // End of chain
@@ -2394,9 +2394,9 @@ describe('JSON serialization/deserialization', () => {
     expect(deserializedState.rootNodes.length).toBe(3);
 
     // Find interval intersect node
-    const deserializedTableNode1 = deserializedState.rootNodes[0];
+    const deserializedTableNode1 = deserializedState.rootNodes[0]!;
     const deserializedIntervalIntersectNode = deserializedTableNode1
-      .nextNodes[0] as IntervalIntersectNode;
+      .nextNodes[0]! as IntervalIntersectNode;
     expect(deserializedIntervalIntersectNode).toBeInstanceOf(
       IntervalIntersectNode,
     );
@@ -2409,7 +2409,7 @@ describe('JSON serialization/deserialization', () => {
     // Find union node
     expect(deserializedIntervalIntersectNode.nextNodes.length).toBe(1);
     const deserializedUnionNode = deserializedIntervalIntersectNode
-      .nextNodes[0] as UnionNode;
+      .nextNodes[0]! as UnionNode;
     expect(deserializedUnionNode).toBeInstanceOf(UnionNode);
 
     // Union should have 2 inputs: interval intersect and tableNode3
@@ -2463,10 +2463,10 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     // Table -> Sort -> Limit (filter should be orphaned)
-    const deserializedTableNode = deserializedState.rootNodes[0];
+    const deserializedTableNode = deserializedState.rootNodes[0]!;
     expect(deserializedTableNode.nextNodes.length).toBe(1);
 
-    const deserializedSortNode = deserializedTableNode.nextNodes[0] as SortNode;
+    const deserializedSortNode = deserializedTableNode.nextNodes[0]! as SortNode;
     expect(deserializedSortNode).toBeInstanceOf(SortNode);
     expect(deserializedSortNode.primaryInput?.nodeId).toBe(
       deserializedTableNode.nodeId,
@@ -2474,7 +2474,7 @@ describe('JSON serialization/deserialization', () => {
 
     expect(deserializedSortNode.nextNodes.length).toBe(1);
     const deserializedLimitNode = deserializedSortNode
-      .nextNodes[0] as LimitAndOffsetNode;
+      .nextNodes[0]! as LimitAndOffsetNode;
     expect(deserializedLimitNode).toBeInstanceOf(LimitAndOffsetNode);
   });
 
@@ -2523,15 +2523,15 @@ describe('JSON serialization/deserialization', () => {
     const deserializedState = deserializeState(json, trace, sqlModules);
 
     // Find union node
-    const deserializedTableNode1 = deserializedState.rootNodes[0];
+    const deserializedTableNode1 = deserializedState.rootNodes[0]!;
     const deserializedUnionNode = deserializedTableNode1
-      .nextNodes[0] as UnionNode;
+      .nextNodes[0]! as UnionNode;
 
     // Union should only have 2 inputs now
     expect(deserializedUnionNode.secondaryInputs.connections.size).toBe(2);
 
     // tableNode2 should have no nextNodes
-    const deserializedTableNode2 = deserializedState.rootNodes[1];
+    const deserializedTableNode2 = deserializedState.rootNodes[1]!;
     expect(deserializedTableNode2.nextNodes.length).toBe(0);
   });
 
@@ -2630,22 +2630,22 @@ describe('JSON serialization/deserialization', () => {
     expect(deserializedState.rootNodes.length).toBe(3);
 
     // Verify first subgraph
-    const deserializedTableNode1 = deserializedState.rootNodes[0];
+    const deserializedTableNode1 = deserializedState.rootNodes[0]!;
     expect(deserializedTableNode1.nextNodes.length).toBe(1);
-    expect(deserializedTableNode1.nextNodes[0]).toBeInstanceOf(FilterNode);
+    expect(deserializedTableNode1.nextNodes[0]!).toBeInstanceOf(FilterNode);
 
     // Verify second subgraph
-    const deserializedTableNode2 = deserializedState.rootNodes[1];
+    const deserializedTableNode2 = deserializedState.rootNodes[1]!;
     expect(deserializedTableNode2.nextNodes.length).toBe(1);
-    const deserializedSortNode = deserializedTableNode2.nextNodes[0];
+    const deserializedSortNode = deserializedTableNode2.nextNodes[0]!;
     expect(deserializedSortNode).toBeInstanceOf(SortNode);
     expect(deserializedSortNode.nextNodes.length).toBe(1);
-    expect(deserializedSortNode.nextNodes[0]).toBeInstanceOf(
+    expect(deserializedSortNode.nextNodes[0]!).toBeInstanceOf(
       LimitAndOffsetNode,
     );
 
     // Verify third subgraph
-    const deserializedSlicesNode = deserializedState.rootNodes[2];
+    const deserializedSlicesNode = deserializedState.rootNodes[2]!;
     expect(deserializedSlicesNode).toBeInstanceOf(SlicesSourceNode);
     expect(deserializedSlicesNode.nextNodes.length).toBe(0);
   });
@@ -2668,7 +2668,7 @@ describe('JSON serialization/deserialization', () => {
 
     expect(deserializedState.rootNodes.length).toBe(1);
     const deserializedNode = deserializedState
-      .rootNodes[0] as TimeRangeSourceNode;
+      .rootNodes[0]! as TimeRangeSourceNode;
     expect(deserializedNode).toBeInstanceOf(TimeRangeSourceNode);
     expect(deserializedNode.start).toEqual(Time.fromRaw(1000n));
     expect(deserializedNode.end).toEqual(Time.fromRaw(2000n));
@@ -2816,8 +2816,8 @@ describe('JSON serialization/deserialization', () => {
 
     // After normalization, the minimum coordinates (400, 250) become (0, 0)
     // All other coordinates are shifted accordingly
-    const tableNodeId = deserializedState.rootNodes[0].nodeId;
-    const sliceNodeId = deserializedState.rootNodes[1].nodeId;
+    const tableNodeId = deserializedState.rootNodes[0]!.nodeId;
+    const sliceNodeId = deserializedState.rootNodes[1]!.nodeId;
 
     expect(deserializedState.nodeLayouts.get(tableNodeId)).toEqual({
       x: 100,
@@ -2827,7 +2827,7 @@ describe('JSON serialization/deserialization', () => {
       x: 400,
       y: 350,
     }); // (800-400, 600-250)
-    expect(deserializedState.labels[0]).toEqual({
+    expect(deserializedState.labels[0]!).toEqual({
       id: 'label-1',
       x: 0,
       y: 0,
@@ -2852,7 +2852,7 @@ describe('JSON serialization/deserialization', () => {
     const json = serializeState(initialState);
     const deserializedState = deserializeState(json, trace, sqlModules);
 
-    const tableNodeId = deserializedState.rootNodes[0].nodeId;
+    const tableNodeId = deserializedState.rootNodes[0]!.nodeId;
     expect(deserializedState.nodeLayouts.get(tableNodeId)).toEqual({
       x: 0,
       y: 0,
@@ -2890,7 +2890,7 @@ describe('JSON serialization/deserialization', () => {
       x: 400,
       y: 350,
     }); // (800-400, 600-250)
-    expect(parsed.labels[0]).toEqual({
+    expect(parsed.labels[0]!).toEqual({
       id: 'label-1',
       x: 0,
       y: 0,
@@ -3191,8 +3191,8 @@ describe('JSON serialization/deserialization', () => {
         labels: [],
       };
       const state = deserializeRaw(graph);
-      const src1 = state.rootNodes[0];
-      const joinNode = src1.nextNodes[0] as JoinNode;
+      const src1 = state.rootNodes[0]!;
+      const joinNode = src1.nextNodes[0]! as JoinNode;
       // After migration, 'name' column should be found and checked: true preserved.
       const nameCol = joinNode.attrs.leftColumns?.find(
         (c) => c.name === 'name',
@@ -3221,7 +3221,7 @@ describe('JSON serialization/deserialization', () => {
         labels: [],
       };
       const state = deserializeRaw(graph);
-      const joinNode = state.rootNodes[0] as JoinNode;
+      const joinNode = state.rootNodes[0]! as JoinNode;
       expect(joinNode.attrs.conditionType).toBe('equality');
       expect(joinNode.attrs.joinType).toBe('INNER');
       expect(joinNode.attrs.leftColumn).toBe('');
@@ -3250,14 +3250,14 @@ describe('JSON serialization/deserialization', () => {
         labels: [],
       };
       const state = deserializeRaw(graph);
-      const modNode = state.rootNodes[0] as ModifyColumnsNode;
-      expect(modNode.attrs.selectedColumns[0].type).toEqual(
+      const modNode = state.rootNodes[0]! as ModifyColumnsNode;
+      expect(modNode.attrs.selectedColumns[0]!.type).toEqual(
         PerfettoSqlTypes.INT,
       );
-      expect(modNode.attrs.selectedColumns[1].type).toEqual(
+      expect(modNode.attrs.selectedColumns[1]!.type).toEqual(
         PerfettoSqlTypes.STRING,
       );
-      expect(modNode.attrs.selectedColumns[2].type).toBeUndefined();
+      expect(modNode.attrs.selectedColumns[2]!.type).toBeUndefined();
     });
 
     it('migrates legacy string types in AggregationNode groupByColumns', () => {
@@ -3283,11 +3283,11 @@ describe('JSON serialization/deserialization', () => {
         labels: [],
       };
       const state = deserializeRaw(graph);
-      const aggNode = state.rootNodes[0] as AggregationNode;
-      expect(aggNode.attrs.groupByColumns[0].type).toEqual(
+      const aggNode = state.rootNodes[0]! as AggregationNode;
+      expect(aggNode.attrs.groupByColumns[0]!.type).toEqual(
         PerfettoSqlTypes.TIMESTAMP,
       );
-      expect(aggNode.attrs.groupByColumns[1].type).toEqual(
+      expect(aggNode.attrs.groupByColumns[1]!.type).toEqual(
         PerfettoSqlTypes.STRING,
       );
     });
@@ -3318,8 +3318,8 @@ describe('JSON serialization/deserialization', () => {
         labels: [],
       };
       const state = deserializeRaw(graph);
-      const aggNode = state.rootNodes[0] as AggregationNode;
-      expect(aggNode.attrs.aggregations[0].column?.type).toEqual(
+      const aggNode = state.rootNodes[0]! as AggregationNode;
+      expect(aggNode.attrs.aggregations[0]!.column?.type).toEqual(
         PerfettoSqlTypes.DURATION,
       );
     });
@@ -3346,11 +3346,11 @@ describe('JSON serialization/deserialization', () => {
         labels: [],
       };
       const state = deserializeRaw(graph);
-      const unionNode = state.rootNodes[0] as UnionNode;
-      expect(unionNode.attrs.selectedColumns[0].type).toEqual(
+      const unionNode = state.rootNodes[0]! as UnionNode;
+      expect(unionNode.attrs.selectedColumns[0]!.type).toEqual(
         PerfettoSqlTypes.INT,
       );
-      expect(unionNode.attrs.selectedColumns[1].type).toEqual(
+      expect(unionNode.attrs.selectedColumns[1]!.type).toEqual(
         PerfettoSqlTypes.TIMESTAMP,
       );
     });
@@ -3373,7 +3373,7 @@ describe('JSON serialization/deserialization', () => {
         labels: [],
       };
       const state = deserializeRaw(graph);
-      const addNode = state.rootNodes[0] as AddColumnsNode;
+      const addNode = state.rootNodes[0]! as AddColumnsNode;
       expect(addNode.attrs.columnTypes?.['val']).toEqual(
         PerfettoSqlTypes.DOUBLE,
       );

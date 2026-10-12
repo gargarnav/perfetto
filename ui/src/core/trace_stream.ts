@@ -197,9 +197,10 @@ export class TraceHttpStream implements TraceStream {
       eof = res.done;
     }
 
-    let data;
-    if (chunks.length === 1) {
-      data = chunks[0];
+    let data: Uint8Array;
+    const firstChunk = chunks[0];
+    if (chunks.length === 1 && firstChunk !== undefined) {
+      data = firstChunk;
     } else {
       // Stitch all the chunks into one big array:
       data = new Uint8Array(bytesRead);

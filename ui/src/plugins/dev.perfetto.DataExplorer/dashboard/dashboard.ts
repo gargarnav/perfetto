@@ -294,7 +294,7 @@ export class Dashboard implements m.ClassComponent<DashboardAttrs> {
     const lastSource =
       (lastChartItem !== undefined
         ? sources.find((s) => s.nodeId === lastChartItem.sourceNodeId)
-        : undefined) ?? (sources.length > 0 ? sources[0] : undefined);
+        : undefined) ?? sources[0];
 
     return [
       m('.pf-dashboard__add-panel-body', [
@@ -1213,6 +1213,7 @@ export class Dashboard implements m.ClassComponent<DashboardAttrs> {
       // Pick any sourceNodeId in the group for clear/remove operations —
       // those functions already propagate across linked sources.
       const representativeSourceId = sourceIds[0];
+      if (representativeSourceId === undefined) continue;
       const chips = columns.sort().flatMap((col) => {
         // Gather filters for this column from all sources in the group.
         const colFilters: DashboardBrushFilter[] = [];

@@ -119,7 +119,7 @@ export class HeapDumpExplorerSession {
         this.loadCount(t.pathHashes, t.isDominator);
       }
     } else {
-      const first = this._dumps.length > 0 ? this._dumps[0] : undefined;
+      const first = this._dumps[0];
       this.store.edit((s) => {
         s.activeDump =
           first === undefined

@@ -19,7 +19,7 @@ import {classNames} from '../../../base/classnames';
 import {download} from '../../../base/download_utils';
 import {Icons} from '../../../base/semantic_icons';
 import {shortUuid} from '../../../base/uuid';
-import {exists, isNumeric, maybeUndefined} from '../../../base/utils';
+import {exists, isNumeric} from '../../../base/utils';
 import type {Row, SqlValue} from '../../../trace_processor/query_result';
 import {Anchor} from '../../../widgets/anchor';
 import {Button, ButtonGroup, ButtonVariant} from '../../../widgets/button';
@@ -1152,7 +1152,7 @@ export class DataGrid implements m.ClassComponent<DataGridAttrs> {
   ): void {
     if (!this.pivot?.aggregates) return;
 
-    const existingAgg = maybeUndefined(this.pivot.aggregates[index]);
+    const existingAgg = this.pivot.aggregates[index];
     if (!existingAgg) return;
 
     if (existingAgg.function === 'COUNT') {
@@ -1674,7 +1674,7 @@ export class DataGrid implements m.ClassComponent<DataGridAttrs> {
         return this.columns.map((col) => {
           const {field} = col;
           const alias = getColumnAlias(col);
-          const value = maybeUndefined(row[alias]);
+          const value = row[alias];
 
           if (value === undefined) {
             return renderMissingCell();
@@ -1834,8 +1834,7 @@ export class DataGrid implements m.ClassComponent<DataGridAttrs> {
       'ASC';
 
     // Build groupBy columns
-    for (let i = 0; i < pivot.groupBy.length; i++) {
-      const groupByCol = pivot.groupBy[i];
+    for (const [i, groupByCol] of pivot.groupBy.entries()) {
       const field = groupByCol.field;
       const sort = groupByCol.sort;
       const colId = groupByCol.id;
@@ -1914,8 +1913,7 @@ export class DataGrid implements m.ClassComponent<DataGridAttrs> {
 
     // Build aggregate columns
     const aggregates = pivot.aggregates ?? [];
-    for (let i = 0; i < aggregates.length; i++) {
-      const agg = aggregates[i];
+    for (const [i, agg] of aggregates.entries()) {
       const sort = agg.sort;
       const alias = getAggregateAlias(agg);
 
@@ -2304,9 +2302,9 @@ export class DataGrid implements m.ClassComponent<DataGridAttrs> {
       columnNames = buildColumnNames(schema, fieldPaths);
 
       // Map aliases to field paths for column name lookup
-      for (let i = 0; i < columns.length; i++) {
-        const alias = columns[i];
-        const field = fieldPaths[i];
+      for (const col of this.columns) {
+        const alias = getColumnAlias(col);
+        const field = col.field;
         if (alias !== field) {
           columnNames[alias] = columnNames[field];
         }

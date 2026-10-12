@@ -102,9 +102,9 @@ export function parseMetricBundleForValue(
   const rows: Row[] = [];
   for (const row of bundle.row ?? []) {
     const rowData: Row = {};
-    for (let i = 0; i < dimensionNames.length; i++) {
+    for (const [i, dimName] of dimensionNames.entries()) {
       const dimValue = row.dimension?.[i];
-      rowData[dimensionNames[i]] = dimValue
+      rowData[dimName] = dimValue
         ? getDimensionValue(dimValue)
         : null;
     }
@@ -197,10 +197,10 @@ export async function showMetricsExportModal(
           '.pf-metrics-result-box',
           valueColumns.length === 1
             ? [
-                m('.pf-metrics-result-header', valueColumns[0].column),
+                m('.pf-metrics-result-header', valueColumns[0]!.column),
                 m(
                   '.pf-metrics-result-content',
-                  renderResultForValue(valueColumns[0].column),
+                  renderResultForValue(valueColumns[0]!.column),
                 ),
               ]
             : m(Tabs, {
@@ -254,7 +254,7 @@ export async function showMetricsExportModal(
           resultStates.set(vc.column, {kind: 'error', message: result.error});
         }
       } else if (result.protoSummary) {
-        for (let i = 0; i < valueColumns.length; i++) {
+        for (const [i, vc] of valueColumns.entries()) {
           const parsed = parseMetricBundleForValue(
             result.protoSummary,
             metricIdPrefix,
@@ -263,12 +263,12 @@ export async function showMetricsExportModal(
             i,
           );
           if (parsed !== undefined && parsed.rows.length > 0) {
-            resultStates.set(valueColumns[i].column, {
+            resultStates.set(vc.column, {
               kind: 'data',
               result: parsed,
             });
           } else {
-            resultStates.set(valueColumns[i].column, {
+            resultStates.set(vc.column, {
               kind: 'error',
               message: 'No metric data found',
             });

@@ -529,8 +529,8 @@ export class TrackTreeView implements m.ClassComponent<TrackTreeViewAttrs> {
     const gridColor = cssColorToRgba(COLOR_BORDER_SECONDARY);
 
     for (let i = 0; i < count; i++) {
-      starts[i] = tickPositions[i];
-      ends[i] = tickPositions[i] + 1;
+      starts[i] = tickPositions[i]!;
+      ends[i] = tickPositions[i]! + 1;
       colors[i] = gridColor;
       patterns[i] = 0;
       depths[i] = 0;

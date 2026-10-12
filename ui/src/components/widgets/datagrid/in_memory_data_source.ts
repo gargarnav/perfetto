@@ -115,7 +115,10 @@ export class InMemoryDataSource implements DataSource {
       // Compute distinct values from base data (not filtered)
       const uniqueValues = new Set<SqlValue>();
       for (const row of this.data) {
-        uniqueValues.add(row[column]);
+        const val = row[column];
+        if (val !== undefined) {
+          uniqueValues.add(val);
+        }
       }
 
       // Sort with null-aware comparison
@@ -223,7 +226,11 @@ export class InMemoryDataSource implements DataSource {
 
     return a.every((colA, i) => {
       const colB = b[i];
-      return colA.alias === colB.alias && colA.field === colB.field;
+      return (
+        colB !== undefined &&
+        colA.alias === colB.alias &&
+        colA.field === colB.field
+      );
     });
   }
 
@@ -248,7 +255,7 @@ export class InMemoryDataSource implements DataSource {
       const projectedRow: Row = {};
       for (const col of columns) {
         // Map field value to alias key
-        projectedRow[col.alias] = row[col.field];
+        projectedRow[col.alias] = row[col.field] ?? null;
       }
       return projectedRow;
     });
@@ -281,7 +288,7 @@ export class InMemoryDataSource implements DataSource {
     return data.filter((row) => {
       // Check if row passes all filters
       return filters.every((filter) => {
-        const value = row[filter.field];
+        const value = row[filter.field] ?? null;
 
         switch (filter.op) {
           case '=':

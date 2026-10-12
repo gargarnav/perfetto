@@ -1368,7 +1368,7 @@ describe('Connection Management', () => {
         return {child, portIndex};
       });
 
-      expect(childConnections[0].portIndex).toBe(1); // B was at port 1
+      expect(childConnections[0]!.portIndex).toBe(1); // B was at port 1
 
       // Disconnect nodeB
       removeConnection(nodeA, nodeB);
@@ -2097,11 +2097,11 @@ describe('Connection Management', () => {
     ): QueryNode | undefined {
       if (
         qnode.nextNodes.length === 1 &&
-        qnode.nextNodes[0] !== undefined &&
-        singleNodeOperation(qnode.nextNodes[0].type) &&
-        !nodeLayouts.has(qnode.nextNodes[0].nodeId)
+        qnode.nextNodes[0]! !== undefined &&
+        singleNodeOperation(qnode.nextNodes[0]!.type) &&
+        !nodeLayouts.has(qnode.nextNodes[0]!.nodeId)
       ) {
-        const child = qnode.nextNodes[0];
+        const child = qnode.nextNodes[0]!;
         // Only dock the child if it's part of the primary flow chain
         if ('primaryInput' in child && child.primaryInput === qnode) {
           return child;
@@ -2425,8 +2425,8 @@ describe('Connection Management', () => {
 
       // VERIFY: B was connected via secondary input, so it's NOT orphaned
       expect(childConnections.length).toBe(1);
-      expect(childConnections[0].child).toBe(nodeB);
-      expect(childConnections[0].portIndex).toBeDefined(); // Secondary input!
+      expect(childConnections[0]!.child).toBe(nodeB);
+      expect(childConnections[0]!.portIndex).toBeDefined(); // Secondary input!
 
       // VERIFY BUG: Buggy code incorrectly treats B as orphaned
       expect(buggyOrphanedChildren).toContain(nodeB); // BUG!
@@ -2441,7 +2441,7 @@ describe('Connection Management', () => {
       // VERIFY: B is still renderable as docked to A
       // (A has one child, B is a single-node operation, B has no layout)
       expect(nodeA.nextNodes.length).toBe(1);
-      expect(nodeA.nextNodes[0]).toBe(nodeB);
+      expect(nodeA.nextNodes[0]!).toBe(nodeB);
       expect(singleNodeOperation(nodeB.type)).toBe(true);
     });
   });
@@ -2482,7 +2482,7 @@ describe('Connection Management', () => {
 
       // VERIFY: A now has exactly one child
       expect(nodeA.nextNodes.length).toBe(1);
-      expect(nodeA.nextNodes[0]).toBe(addColsNode);
+      expect(nodeA.nextNodes[0]!).toBe(addColsNode);
 
       // VERIFY: AddColumns has A as its primary input
       expect(addColsNode.primaryInput).toBe(nodeA);
@@ -2596,7 +2596,7 @@ describe('Connection Management', () => {
 
       // Union allows unbounded inputs
       for (let i = 0; i < nodes.length; i++) {
-        addConnection(nodes[i], unionNode, i);
+        addConnection(nodes[i]!, unionNode, i);
       }
 
       // With 10 inputs, validation should pass (unbounded max)

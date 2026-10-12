@@ -199,8 +199,5 @@ export async function getThreadState(
   if (result.length > 1) {
     throw new Error(`thread_state table has more than one row with id ${id}`);
   }
-  if (result.length === 0) {
-    return undefined;
-  }
   return result[0];
 }

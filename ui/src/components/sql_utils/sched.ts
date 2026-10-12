@@ -119,9 +119,6 @@ export async function getSched(
     filters: [`sched.id=${id}`],
   });
   assertTrue(result.length <= 1);
-  if (result.length === 0) {
-    return undefined;
-  }
   return result[0];
 }
 

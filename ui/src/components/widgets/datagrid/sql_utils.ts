@@ -92,8 +92,8 @@ export function sqlPathsIn(
   if (pathsWithoutNulls.length > 0) {
     if (columns.length === 1) {
       // Single column: simple IN
-      const values = pathsWithoutNulls.map((p) => sqlValue(p[0])).join(', ');
-      conditions.push(`${columns[0]} IN (${values})`);
+      const values = pathsWithoutNulls.map((p) => sqlValue(p[0]!)).join(', ');
+      conditions.push(`${columns[0]!} IN (${values})`);
     } else {
       // Multiple columns: tuple IN
       const colTuple = columns.join(', ');
@@ -112,7 +112,7 @@ export function sqlPathsIn(
   if (conditions.length === 0) {
     return 'FALSE';
   } else if (conditions.length === 1) {
-    return conditions[0];
+    return conditions[0]!;
   } else {
     return `(${conditions.join(' OR ')})`;
   }
@@ -136,8 +136,8 @@ export function sqlPathsNotIn(
   if (pathsWithoutNulls.length > 0) {
     if (columns.length === 1) {
       // Single column: simple NOT IN
-      const values = pathsWithoutNulls.map((p) => sqlValue(p[0])).join(', ');
-      conditions.push(`${columns[0]} NOT IN (${values})`);
+      const values = pathsWithoutNulls.map((p) => sqlValue(p[0]!)).join(', ');
+      conditions.push(`${columns[0]!} NOT IN (${values})`);
     } else {
       // Multiple columns: tuple NOT IN
       const colTuple = columns.join(', ');
@@ -156,7 +156,7 @@ export function sqlPathsNotIn(
   if (conditions.length === 0) {
     return 'TRUE';
   } else if (conditions.length === 1) {
-    return conditions[0];
+    return conditions[0]!;
   } else {
     return conditions.join(' AND ');
   }

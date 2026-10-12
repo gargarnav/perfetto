@@ -666,6 +666,7 @@ export function NodeGraphDemo(): m.Component<NodeGraphDemoAttrs> {
 
         const parentId =
           availableParents[Math.floor(Math.random() * availableParents.length)];
+        if (parentId === undefined) break;
         const parent = draft.nodes.get(parentId)!;
 
         // Find a child node that can dock (has canDockTop)
@@ -681,6 +682,7 @@ export function NodeGraphDemo(): m.Component<NodeGraphDemoAttrs> {
           availableChildren[
             Math.floor(Math.random() * availableChildren.length)
           ];
+        if (childId === undefined) continue;
 
         // Stack the child under the parent
         parent.nextId = childId;
@@ -697,7 +699,13 @@ export function NodeGraphDemo(): m.Component<NodeGraphDemoAttrs> {
         const fromNodeId = nodeIds[Math.floor(Math.random() * nodeIds.length)];
         const toNodeId = nodeIds[Math.floor(Math.random() * nodeIds.length)];
 
-        if (fromNodeId === toNodeId) continue;
+        if (
+          fromNodeId === undefined ||
+          toNodeId === undefined ||
+          fromNodeId === toNodeId
+        ) {
+          continue;
+        }
 
         const fromNode = draft.nodes.get(fromNodeId)!;
         const toNode = draft.nodes.get(toNodeId)!;
@@ -871,8 +879,9 @@ export function NodeGraphDemo(): m.Component<NodeGraphDemoAttrs> {
         }
 
         const validInputs = inputs.filter((sql) => sql);
-        if (validInputs.length === 0) return '';
-        if (validInputs.length === 1) return validInputs[0];
+        const firstInput = validInputs[0];
+        if (firstInput === undefined) return '';
+        if (validInputs.length === 1) return firstInput;
         return validInputs.map((sql) => `(${sql})`).join(` ${unionType} `);
       }
 

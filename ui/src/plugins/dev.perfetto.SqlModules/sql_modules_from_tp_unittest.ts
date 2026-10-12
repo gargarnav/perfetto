@@ -34,15 +34,15 @@ type ObjectRow = readonly [
 
 function makeQueryResult(rows: readonly ObjectRow[]) {
   const strings = rows.flatMap((row) => [
-    row[0],
-    row[1],
-    row[2],
-    row[3],
-    row[4],
-    row[6],
-    row[7],
-    row[8],
-    row[9],
+    row[0]!,
+    row[1]!,
+    row[2]!,
+    row[3]!,
+    row[4]!,
+    row[6]!,
+    row[7]!,
+    row[8]!,
+    row[9]!,
   ]);
   const cells = rows.flatMap(() => [
     CELL_TYPE.CELL_STRING,
@@ -59,7 +59,7 @@ function makeQueryResult(rows: readonly ObjectRow[]) {
   const batch = protos.QueryResult.CellsBatch.create({
     cells,
     stringCells: strings.join('\0'),
-    varintCells: rows.map((row) => row[5]),
+    varintCells: rows.map((row) => row[5]!),
     isLastBatch: true,
   });
   const resultProto = protos.QueryResult.create({
@@ -170,15 +170,15 @@ test('loads the unified stdlib object catalog', async () => {
   });
 
   expect(queries).toHaveLength(1);
-  expect(queries[0]).toContain('FROM __intrinsic_stdlib_objects');
-  const module = sqlModules.listModules()[0];
+  expect(queries[0]!).toContain('FROM __intrinsic_stdlib_objects');
+  const module = sqlModules.listModules()[0]!;
   expect(module.includeKey).toBe('test.module');
   expect(module.tables.map((table) => table.name)).toEqual(['test_table']);
-  expect(module.tables[0].importance).toBe('high');
-  expect(module.tables[0].columns[0].name).toBe('value');
-  expect(module.functions[0].name).toBe('test_function');
-  expect(module.functions[0].returnType).toBe('LONG');
-  expect(module.tableFunctions[0].name).toBe('test_table_function');
-  expect(module.tableFunctions[0].returnCols[0].name).toBe('output');
-  expect(module.macros[0].name).toBe('test_macro');
+  expect(module.tables[0]!.importance).toBe('high');
+  expect(module.tables[0]!.columns[0]!.name).toBe('value');
+  expect(module.functions[0]!.name).toBe('test_function');
+  expect(module.functions[0]!.returnType).toBe('LONG');
+  expect(module.tableFunctions[0]!.name).toBe('test_table_function');
+  expect(module.tableFunctions[0]!.returnCols[0]!.name).toBe('output');
+  expect(module.macros[0]!.name).toBe('test_macro');
 });

@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {maybeUndefined} from '../../../base/utils';
 import {splitPath} from './datagrid_schema';
 import {quoteIdentifier} from './sql_utils';
 
@@ -279,7 +278,7 @@ export class SQLSchemaResolver {
     }
 
     const [first, ...rest] = parts;
-    const colDef = maybeUndefined(schema.columns?.[first]);
+    const colDef = schema.columns?.[first];
 
     if (!colDef) {
       // Column not found in schema - treat as raw column name.
@@ -402,7 +401,7 @@ export class SQLSchemaResolver {
     }
 
     const [first, ...rest] = parts;
-    const colDef = maybeUndefined(schema.columns?.[first]);
+    const colDef = schema.columns?.[first];
     if (!colDef) {
       return undefined;
     }

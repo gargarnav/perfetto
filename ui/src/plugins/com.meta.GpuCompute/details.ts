@@ -597,7 +597,7 @@ export function renderMetricResultTable(
   type Row = (typeof rows)[number];
   const pairs: Array<[Row, Row?]> = [];
   for (let i = 0; i < Math.ceil(rows.length / 2); i += 1) {
-    pairs.push([rows[i], rows[Math.ceil(rows.length / 2) + i]]);
+    pairs.push([rows[i]!, rows[Math.ceil(rows.length / 2) + i]]);
   }
 
   return m('table.pf-gpu-compute__metric-table', [

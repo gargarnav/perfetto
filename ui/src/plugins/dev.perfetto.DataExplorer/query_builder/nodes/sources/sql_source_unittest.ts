@@ -89,9 +89,9 @@ describe('SqlSourceNode', () => {
 
       const inputs = node.inputNodesList;
       expect(inputs.length).toBe(3);
-      expect(inputs[0]).toBe(input0);
-      expect(inputs[1]).toBe(input1);
-      expect(inputs[2]).toBe(input2);
+      expect(inputs[0]!).toBe(input0);
+      expect(inputs[1]!).toBe(input1);
+      expect(inputs[2]!).toBe(input2);
     });
   });
 
@@ -121,7 +121,7 @@ describe('SqlSourceNode', () => {
       const sq = node.getStructuredQuery();
       expect(sq).toBeDefined();
       expect(sq?.sql?.dependencies?.length).toBe(1);
-      expect(sq?.sql?.dependencies?.[0].alias).toBe('input_0');
+      expect(sq?.sql?.dependencies?.[0]!.alias).toBe('input_0');
     });
 
     it('should include multiple dependencies with correct aliases', () => {

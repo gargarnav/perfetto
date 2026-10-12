@@ -111,7 +111,7 @@ describe('TrackNode.addChildInOrder', () => {
     container.addChildInOrder(child);
 
     expect(container.children).toHaveLength(1);
-    expect(container.children[0]).toBe(child);
+    expect(container.children[0]!).toBe(child);
   });
 
   test('inserts a child with a lower sortOrder before an existing child', () => {
@@ -122,8 +122,8 @@ describe('TrackNode.addChildInOrder', () => {
     container.addChildInOrder(child2);
 
     expect(container.children).toHaveLength(2);
-    expect(container.children[0]).toBe(child2);
-    expect(container.children[1]).toBe(child1);
+    expect(container.children[0]!).toBe(child2);
+    expect(container.children[1]!).toBe(child1);
   });
 
   test('inserts a child with a higher sortOrder after an existing child', () => {
@@ -134,8 +134,8 @@ describe('TrackNode.addChildInOrder', () => {
     container.addChildInOrder(child2);
 
     expect(container.children).toHaveLength(2);
-    expect(container.children[0]).toBe(child1);
-    expect(container.children[1]).toBe(child2);
+    expect(container.children[0]!).toBe(child1);
+    expect(container.children[1]!).toBe(child2);
   });
 
   test('inserts a child with the same sortOrder after an existing child', () => {
@@ -146,8 +146,8 @@ describe('TrackNode.addChildInOrder', () => {
     container.addChildInOrder(child2);
 
     expect(container.children).toHaveLength(2);
-    expect(container.children[0]).toBe(child1);
-    expect(container.children[1]).toBe(child2);
+    expect(container.children[0]!).toBe(child1);
+    expect(container.children[1]!).toBe(child2);
   });
 
   test('inserts multiple children and maintains order', () => {
@@ -160,9 +160,9 @@ describe('TrackNode.addChildInOrder', () => {
     container.addChildInOrder(child3);
 
     expect(container.children).toHaveLength(3);
-    expect(container.children[0]).toBe(child2);
-    expect(container.children[1]).toBe(child1);
-    expect(container.children[2]).toBe(child3);
+    expect(container.children[0]!).toBe(child2);
+    expect(container.children[1]!).toBe(child1);
+    expect(container.children[2]!).toBe(child3);
   });
 
   test('inserts a child with undefined sortOrder as 0', () => {
@@ -177,8 +177,8 @@ describe('TrackNode.addChildInOrder', () => {
     expect(container.children).toHaveLength(2);
 
     // child2 (sortOrder 0) should be first
-    expect(container.children[0]).toBe(child2);
-    expect(container.children[1]).toBe(child1);
+    expect(container.children[0]!).toBe(child2);
+    expect(container.children[1]!).toBe(child1);
   });
 });
 
@@ -370,9 +370,9 @@ test('TrackNode::clone(deep)', () => {
   expect(cloned.removable).toBe(root.removable);
   expect(cloned.children).toHaveLength(2);
 
-  expect(cloned.children[0].name).toBe(childA.name);
-  expect(cloned.children[0].uri).toBe(childA.uri);
+  expect(cloned.children[0]!.name).toBe(childA.name);
+  expect(cloned.children[0]!.uri).toBe(childA.uri);
 
-  expect(cloned.children[1].name).toBe(childB.name);
-  expect(cloned.children[1].uri).toBe(childB.uri);
+  expect(cloned.children[1]!.name).toBe(childB.name);
+  expect(cloned.children[1]!.uri).toBe(childB.uri);
 });

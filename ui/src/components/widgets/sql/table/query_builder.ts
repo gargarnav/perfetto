@@ -130,8 +130,7 @@ class QueryBuilder {
       );
 
     // Check if this join is already present.
-    for (let i = 0; i < this.tables.length; ++i) {
-      const table = this.tables[i];
+    for (const [i, table] of this.tables.entries()) {
       if (
         table.table === column.source.table &&
         table.innerJoin === (column.source.innerJoin ?? false) &&

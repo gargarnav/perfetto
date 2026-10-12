@@ -35,7 +35,6 @@ import type {
 import './chat_panel.scss';
 import type {ChatLine, ChatSession} from './chat_session';
 import type {ContextItem, ContextRegistry} from './context';
-import {maybeUndefined} from '../../base/utils';
 import type {Setting} from '../../public/settings';
 import {assertExists} from '../../base/assert';
 import {Spinner} from '../../widgets/spinner';
@@ -78,7 +77,7 @@ function getValidModel(
     }
   }
 
-  const firstModel = maybeUndefined(agenticModels[0]);
+  const firstModel = agenticModels[0];
   if (firstModel) {
     return {providerId: firstModel.provider.id, modelId: firstModel.model.id};
   }

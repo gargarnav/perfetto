@@ -234,9 +234,8 @@ export class AddColumnsNode implements QueryNode {
     }
 
     // Check against other computed columns
-    for (let i = 0; i < (this.attrs.computedColumns?.length ?? 0); i++) {
+    for (const [i, col] of (this.attrs.computedColumns ?? []).entries()) {
       if (i === excludeIndex) continue; // Skip the column being edited
-      const col = this.attrs.computedColumns![i];
       if (col.name.trim() === trimmedName) {
         return `Column "${trimmedName}" already exists in computed columns`;
       }

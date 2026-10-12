@@ -37,8 +37,7 @@ export class QueryHistoryComponent implements m.ClassComponent<QueryHistoryCompo
     const starred: HistoryItemComponentAttrs[] = [];
     // Items are stored with most recent first (index 0)
     // Iterate forward and separate starred from unstarred
-    for (let i = 0; i < queryHistoryStorage.data.length; i++) {
-      const entry = queryHistoryStorage.data[i];
+    for (const [i, entry] of queryHistoryStorage.data.entries()) {
       const arr = entry.starred ? starred : unstarred;
       arr.push({trace, index: i, entry, runQuery, setQuery});
     }

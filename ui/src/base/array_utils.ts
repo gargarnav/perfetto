@@ -62,6 +62,7 @@ export function removeFalsyValues<T>(
 export function moveArrayItem<T>(array: T[], from: number, to: number) {
   if (from === to) return;
   const value = array[from];
+  if (value === undefined) return;
   array.splice(from, 1);
   if (from < to) {
     // We have deleted an item, therefore we need to adjust the target index.
@@ -73,8 +74,9 @@ export function moveArrayItem<T>(array: T[], from: number, to: number) {
 // If all values in the array are the same, returns that value. Otherwise
 // returns undefined. If the array is empty, returns undefined.
 export function valueIfAllEqual<T>(arr: ReadonlyArray<T>): T | undefined {
-  if (arr.length === 0) return undefined;
-  if (arr.every((val) => val === arr[0])) return arr[0];
+  const first = arr[0];
+  if (first === undefined) return undefined;
+  if (arr.every((val) => val === first)) return first;
   return undefined;
 }
 

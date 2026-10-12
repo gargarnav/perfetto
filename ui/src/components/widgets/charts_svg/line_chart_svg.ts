@@ -119,8 +119,7 @@ export class LineChartSvg implements m.ClassComponent<LineChartAttrs> {
       m(
         ChartLegend,
         data.series.map((s, i) => {
-          const last =
-            s.points.length > 0 ? s.points[s.points.length - 1].y : undefined;
+          const last = s.points[s.points.length - 1]?.y;
           const hidden = this.hiddenSeries.has(s.name);
           return m(ChartLegend.Entry, {
             name: s.name,
@@ -606,7 +605,8 @@ export class LineChartSvg implements m.ClassComponent<LineChartAttrs> {
       this.hover = undefined;
       return;
     }
-    if (seriesPlots.length === 0 || seriesPlots[0].points.length === 0) return;
+    const firstPlot = seriesPlots[0];
+    if (firstPlot === undefined || firstPlot.points.length === 0) return;
     const px = e.clientX - rect.left;
     if (px < padLeft || px > padLeft + plotW) {
       if (this.hover !== undefined) {
@@ -617,21 +617,25 @@ export class LineChartSvg implements m.ClassComponent<LineChartAttrs> {
     const xVal =
       xRange.min + ((px - padLeft) / (plotW || 1)) * (xRange.max - xRange.min);
     // Nearest index in series 0 (assumes shared x; first series is reference).
-    const pts = seriesPlots[0].points;
+    const pts = firstPlot.points;
     let bestIdx = 0;
     let bestDist = Infinity;
     for (let i = 0; i < pts.length; i++) {
-      const d = Math.abs(pts[i].x - xVal);
+      const pt = pts[i];
+      if (pt === undefined) continue;
+      const d = Math.abs(pt.x - xVal);
       if (d < bestDist) {
         bestDist = d;
         bestIdx = i;
       }
     }
+    const bestPt = pts[bestIdx];
+    if (bestPt === undefined) return;
     this.hover = {
       clientX: e.clientX,
       clientY: e.clientY,
       index: bestIdx,
-      xValue: pts[bestIdx].x,
+      xValue: bestPt.x,
     };
   }
 }
@@ -650,8 +654,7 @@ function buildSeriesPlots(
   // Stacked: assume aligned x values across series; sum cumulatively.
   const result: SeriesPlot[] = [];
   const cum = new Map<number, number>();
-  for (let i = 0; i < series.length; i++) {
-    const s = series[i];
+  for (const [i, s] of series.entries()) {
     const stackedPoints: {x: number; y: number; raw: number}[] = [];
     for (const p of s.points) {
       const prev = cum.get(p.x) ?? 0;
@@ -675,8 +678,7 @@ function linePath(
 ): string {
   if (s.points.length === 0) return '';
   let d = '';
-  for (let i = 0; i < s.points.length; i++) {
-    const p = s.points[i];
+  for (const [i, p] of s.points.entries()) {
     d += (i === 0 ? 'M' : 'L') + xToPx(p.x) + ',' + yToPx(p.y) + ' ';
   }
   return d.trim();
@@ -694,18 +696,26 @@ function areaPath(
 ): string {
   if (s.points.length === 0) return '';
   const top = s.points;
-  const bottom = index > 0 ? all[index - 1].points : undefined;
+  const bottom = index > 0 ? all[index - 1]?.points : undefined;
   let d = '';
   for (let i = 0; i < top.length; i++) {
-    d += (i === 0 ? 'M' : 'L') + xToPx(top[i].x) + ',' + yToPx(top[i].y) + ' ';
+    const pt = top[i];
+    if (pt === undefined) continue;
+    d += (i === 0 ? 'M' : 'L') + xToPx(pt.x) + ',' + yToPx(pt.y) + ' ';
   }
   if (bottom !== undefined) {
     for (let i = bottom.length - 1; i >= 0; i--) {
-      d += 'L' + xToPx(bottom[i].x) + ',' + yToPx(bottom[i].y) + ' ';
+      const pt = bottom[i];
+      if (pt === undefined) continue;
+      d += 'L' + xToPx(pt.x) + ',' + yToPx(pt.y) + ' ';
     }
   } else {
-    d += 'L' + xToPx(top[top.length - 1].x) + ',' + baselinePx + ' ';
-    d += 'L' + xToPx(top[0].x) + ',' + baselinePx + ' ';
+    const lastPt = top[top.length - 1];
+    const firstPt = top[0];
+    if (lastPt !== undefined && firstPt !== undefined) {
+      d += 'L' + xToPx(lastPt.x) + ',' + baselinePx + ' ';
+      d += 'L' + xToPx(firstPt.x) + ',' + baselinePx + ' ';
+    }
   }
   d += 'Z';
   return d;

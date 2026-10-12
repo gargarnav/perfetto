@@ -211,7 +211,7 @@ export class Router {
     const EVENT_LIMIT = 20;
     const now = Date.now();
     while (
-      this.recentChanges.length > 0 &&
+      this.recentChanges[0] !== undefined &&
       now - this.recentChanges[0] > WINDOW_MS
     ) {
       this.recentChanges.shift();

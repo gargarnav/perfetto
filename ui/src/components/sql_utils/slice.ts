@@ -153,9 +153,6 @@ export async function getSlice(
   if (result.length > 1) {
     throw new Error(`slice table has more than one row with id ${id}`);
   }
-  if (result.length === 0) {
-    return undefined;
-  }
   return result[0];
 }
 

@@ -155,17 +155,18 @@ export function preprocessSourceMap(sourceMap: SourceMap): ProcessedSourceMap {
     for (const segment of segmentStrings) {
       if (!segment) continue;
       const decoded = decodeVLQ(segment);
-      if (decoded.length === 0) continue;
+      const first = decoded[0];
+      if (first === undefined) continue;
 
-      genCol += decoded[0];
+      genCol += first;
 
       if (decoded.length >= 4) {
-        sourceIndex += decoded[1];
-        sourceLine += decoded[2];
-        sourceCol += decoded[3];
+        sourceIndex += decoded[1]!;
+        sourceLine += decoded[2]!;
+        sourceCol += decoded[3]!;
         const hasName = decoded.length >= 5;
         if (hasName) {
-          nameIndex += decoded[4];
+          nameIndex += decoded[4]!;
         }
 
         segments.push({
@@ -199,6 +200,7 @@ function binarySearchSegment(
   while (left <= right) {
     const mid = Math.floor((left + right) / 2);
     const segment = segments[mid];
+    if (segment === undefined) break;
 
     if (segment.genCol <= targetCol) {
       // This could be a match, but check if there's a better one to the right
