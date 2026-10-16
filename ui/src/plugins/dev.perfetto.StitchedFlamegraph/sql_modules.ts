@@ -14,6 +14,7 @@
 
 import type {SqlModule} from '../../public/extra_sql_packages';
 import {STITCHED_CORE_MODULE} from './core_sql';
+import {STITCHED_CRITICAL_PATH_MODULE} from './critical_path_sql';
 import {
   STITCHED_FLOWS_DOWN_MODULE,
   STITCHED_FLOWS_UP_MODULE,
@@ -24,4 +25,5 @@ export const STITCHED_SQL_MODULES: ReadonlyArray<SqlModule> = [
   STITCHED_CORE_MODULE,
   STITCHED_FLOWS_DOWN_MODULE,
   STITCHED_FLOWS_UP_MODULE,
+  STITCHED_CRITICAL_PATH_MODULE,
 ];
