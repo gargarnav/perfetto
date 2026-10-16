@@ -71,6 +71,10 @@ export interface TreeExplorerPanelAttrs {
   // with null default content and show the result when hovering the node's
   // icon.
   readonly renderNodeTooltip?: TreeExplorerNodeTooltipRenderer;
+
+  // Host-specific controls rendered in the filter bar, just before the Top
+  // Down / Bottom Up selector.
+  readonly extraControls?: m.Children;
 }
 
 // The batteries-included tree explorer: a tab bar switching between the
@@ -147,6 +151,7 @@ export class TreeExplorerPanel implements m.ClassComponent<TreeExplorerPanelAttr
                 ? 'call_tree'
                 : 'flamegraph',
           extraDownloadItems: attrs.extraDownloadItems,
+          extraControls: attrs.extraControls,
         }),
         children,
       );

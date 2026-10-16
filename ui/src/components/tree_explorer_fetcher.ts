@@ -79,8 +79,9 @@ export interface TreeExplorerQueryMetric {
   readonly nameColumnLabel?: string;
 
   // SQL statement which need to be run in preparation for being able to execute
-  // `statement`.
-  readonly dependencySql?: string;
+  // `statement`. A list is run in order. Each distinct SQL string is run at
+  // most once per fetcher, so metrics can share (part of) their preparation.
+  readonly dependencySql?: string | ReadonlyArray<string>;
 
   // A single SQL statement which returns the columns `id`, `parentId`, `name`
   // `selfValue`, all columns specified by `unaggregatableProperties` and
@@ -190,6 +191,7 @@ interface MetricTableSlot {
 export class TreeExplorerFetcher implements Disposable {
   private readonly slots: ReadonlyArray<MetricTableSlot>;
   private readonly dataMemo: AsyncMemo<TreeExplorerData>;
+  private readonly dependencyRuns = new Map<string, Promise<unknown>>();
 
   constructor(
     private readonly trace: Trace,
@@ -245,11 +247,31 @@ export class TreeExplorerFetcher implements Disposable {
     });
   }
 
+  // Runs each distinct dependency SQL once for the fetcher's lifetime, so
+  // metrics sharing their preparation (e.g. a duration and a count over the
+  // same tables) only pay for it once.
+  private runDependencySql(sql: string): Promise<unknown> {
+    let run = this.dependencyRuns.get(sql);
+    if (run === undefined) {
+      run = this.trace.engine.query(sql);
+      // Let a failed run be retried rather than cache the failure.
+      run.catch(() => this.dependencyRuns.delete(sql));
+      this.dependencyRuns.set(sql, run);
+    }
+    return run;
+  }
+
   private async createMetricTable(
     metric: TreeExplorerQueryMetric,
   ): Promise<MetricTable> {
     if (metric.dependencySql !== undefined) {
-      await this.trace.engine.query(metric.dependencySql);
+      const statements =
+        typeof metric.dependencySql === 'string'
+          ? [metric.dependencySql]
+          : metric.dependencySql;
+      for (const sql of statements) {
+        await this.runDependencySql(sql);
+      }
     }
     const properties = [
       ...(metric.unaggregatableProperties ?? []),

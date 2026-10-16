@@ -17,6 +17,7 @@ import {createStore, type Migrate, type Store} from '../base/store';
 import {TimelineImpl} from './timeline';
 import type {Command} from '../public/commands';
 import type {Trace} from '../public/trace';
+import type {SqlPackage} from '../public/extra_sql_packages';
 import type {ScrollToArgs} from '../public/scroll_helper';
 import type {Engine, EngineBase} from '../trace_processor/engine';
 import type {CommandManagerImpl} from './command_manager';
@@ -85,12 +86,16 @@ export class TraceImpl implements Trace, Disposable {
   readonly app: AppImpl;
   readonly store = createStore<Record<string, unknown>>({});
 
+  // The engine, with the RPCs not exposed to plugins through `Engine`.
+  private readonly engineBase: EngineBase;
+
   // Do we need this?
   readonly pluginSerializableState = createStore<{[key: string]: {}}>({});
 
   constructor(app: AppImpl, engine: EngineBase, traceInfo: TraceInfoImpl) {
     this.app = app;
     this.engine = engine;
+    this.engineBase = engine;
     this.trash.use(engine);
     this.traceInfo = traceInfo;
 
@@ -354,6 +359,12 @@ export class TraceImpl implements Trace, Disposable {
 
   mountStore<T>(id: string, migrate: Migrate<T>): Store<T> {
     return this.store.createSubStore([id], migrate);
+  }
+
+  async addSqlPackages(packages: ReadonlyArray<SqlPackage>): Promise<void> {
+    for (const pkg of packages) {
+      await this.engineBase.registerSqlPackages(pkg);
+    }
   }
 }
 

@@ -94,6 +94,7 @@ export const defaultPlugins = [
   'dev.perfetto.SqlModules',
   'dev.perfetto.StackSamples',
   'dev.perfetto.StandardGroups',
+  'dev.perfetto.StitchedFlamegraph',
   'dev.perfetto.Thread',
   'dev.perfetto.Timeline',
   'dev.perfetto.TimelineSync',

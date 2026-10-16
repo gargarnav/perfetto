@@ -16,6 +16,7 @@ import type {Migrate, Store} from '../base/store';
 import type {TraceInfo} from './trace_info';
 import type {Engine} from '../trace_processor/engine';
 import type {App} from './app';
+import type {SqlPackage} from './extra_sql_packages';
 import type {TabManager} from './tab';
 import type {TrackManager} from './track';
 import type {Timeline} from './timeline';
@@ -69,6 +70,11 @@ export interface Trace extends App {
 
   // Create a store mounted over the top of this plugin's persistent state.
   mountStore<T>(id: string, migrate: Migrate<T>): Store<T>;
+
+  // Registers PerfettoSQL packages with this trace's trace processor. Their
+  // modules can then be pulled in with INCLUDE PERFETTO MODULE, which runs
+  // each module lazily and at most once, so registering is cheap.
+  addSqlPackages(packages: ReadonlyArray<SqlPackage>): Promise<void>;
 
   // Returns the blob of the current trace file.
   // If the trace is opened from a file or postmessage, the blob is returned

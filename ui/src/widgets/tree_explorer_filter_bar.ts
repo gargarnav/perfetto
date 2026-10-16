@@ -81,6 +81,11 @@ export interface TreeExplorerFilterBarAttrs {
   // Downloads the host produces itself, appended to the export menu for
   // representations this bar cannot build from the displayed tree.
   readonly extraDownloadItems?: ReadonlyArray<ExportDownloadItem>;
+
+  // Host-specific controls (e.g. a RadioGroup choosing which data the host
+  // feeds the explorer), rendered just before the Top Down / Bottom Up
+  // selector.
+  readonly extraControls?: m.Children;
 }
 
 // The filtering / measure-selection bar shared by all tree explorer views.
@@ -206,6 +211,7 @@ export class TreeExplorerFilterBar implements m.ClassComponent<TreeExplorerFilte
           });
         },
       }),
+      attrs.extraControls,
       m(
         RadioGroup,
         {
